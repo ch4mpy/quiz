@@ -1,0 +1,11 @@
+{
+  "preferred_username": "tonton-pirate",
+  "realm_access": {
+    "roles": [
+    	"UNCLE", "SKIPPER"
+  	]
+  },
+  "resource_access": {
+  },
+  "scope": "openid email"
+}

@@ -1,4 +1,4 @@
-package com.c4soft.openidtraining.usersapi;
+package com.c4soft.quiz;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

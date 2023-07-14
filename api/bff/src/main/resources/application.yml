@@ -1,6 +1,6 @@
 scheme: http
 oauth2-issuer: https://oidc.c4-soft.com/auth/realms/master
-oauth2-client-id: change-me
+oauth2-client-id: quiz
 oauth2-client-secret: change-me
 
 gateway-uri: ${scheme}://localhost:${server.port}
@@ -58,7 +58,7 @@ spring:
       - id: quiz-api-bff
         uri: ${quiz-api-uri}
         predicates:
-        - Path=/bff/v1/quiz/**
+        - Path=/bff/v1/quizzes/**
         filters:
         - TokenRelay=
         - SaveSession

@@ -1,5 +1,5 @@
-oauth2-issuer: https://dev-ch4mpy.eu.auth0.com/
-allowed-origins: http://localhost, http://localhost:3000, http://localhost:3002, http://localhost:3003, https://localhost:3402, https://localhost:3403, http://localhost:7082, https://localhost:7082
+oauth2-issuer: https://oidc.c4-soft.com/auth/realms/master
+oauth2-client-id: quiz
 
 server:
   port: 8080
@@ -16,6 +16,15 @@ spring:
     - optional:configtree:/workspace/secret/
   lifecycle:
     timeout-per-shutdown-phase: 30s
+  datasource:
+    url: jdbc:postgresql://localhost:5432/quiz
+    username: quiz
+    password: change-me
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
 
 com:
   c4-soft:
@@ -23,39 +32,13 @@ com:
       oidc:
         ops:
         - iss: ${oauth2-issuer}
-          # Optional: activate audience validation on JWT decoder
-          aud: openid-training.c4-soft.com
-          username-claim: $['https://c4-soft.com/user']['name']
+          username-claim: preferred_username
           authorities:
-          - path: $['https://c4-soft.com/authorities']
-          - path: $.scope
-            prefix: SCOPE_
-        - iss: https://dev-kz80hiel8uxdrskc.us.auth0.com/
-          authorities:
-          - path: $.scope
-            prefix: SCOPE_
-        - iss: https://dev-asouliman.us.auth0.com/
-          authorities:
-          - path: $.scope
-            prefix: SCOPE_
-        - iss: https://dev-v8o77ok3puko7dfx.us.auth0.com/
-          authorities:
-          - path: $.scope
-            prefix: SCOPE_
-        - iss: https://dev-gxakmaorbhkzyz45.us.auth0.com/
-          authorities:
-          - path: $.scope
-            prefix: SCOPE_
-        - iss: https://dev-5quamlkydqkkh4y6.eu.auth0.com/
-          authorities:
-          - path: $.scope
-            prefix: SCOPE_
+          - path: $.realm_access.roles
+          - path: $.resource_access.${oauth2-client-id}.roles
         resourceserver:
-          cors:
-          - path: /users/**
-            allowed-origin-patterns: ${allowed-origins}
           permit-all:
-          - "/users/me"
+          - "/quizzes/**"
           - "/actuator/health/readiness"
           - "/actuator/health/liveness"
           - "/v3/api-docs/**"
@@ -77,7 +60,9 @@ management:
 
 logging:
   level:
-    '[org.springframework.security]': TRACE
+    org:
+      springframework:
+        security: DEBUG
 ---
 server:
   ssl:

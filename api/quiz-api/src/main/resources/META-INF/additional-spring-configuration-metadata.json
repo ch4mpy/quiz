@@ -5,8 +5,8 @@
     "description": "OpenID issuer URI"
   },
   {
-    "name": "allowed-origins",
-    "type": "java.lang.String[]",
-    "description": "Allowed origins for CORS requests"
+    "name": "oauth2-client-id",
+    "type": "java.lang.String",
+    "description": "client-id used for resource_access roles"
   }
 ]}

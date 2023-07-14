@@ -1,6 +1,7 @@
 package com.c4soft.quiz.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -11,18 +12,24 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(uniqueConstraints = { @UniqueConstraint(name = "UniqueQuestionByPriorityQuiz", columnNames = { "quiz_id", "priority" }) })
 public class Question {
+	public Question(String label, Integer priority, String comment, Choice... choices) {
+		this.label = label;
+		this.priority = priority;
+		this.comment = comment;
+		this.choices = new ArrayList<>(choices.length);
+		for(var c : choices) {
+			this.add(c);
+		}
+	}
 
 	@Id
 	@GeneratedValue
@@ -37,11 +44,42 @@ public class Question {
 	
 	@Column(nullable = false, updatable = true)
 	private Integer priority;
-	
+
+	@Setter(AccessLevel.NONE)
 	@OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Choice> choices = new ArrayList<>();
 	
 	@Column
 	private String comment;
+	
+	public List<Choice> getChoices() {
+		return Collections.unmodifiableList(choices);
+	}
+	
+	public Choice getChoice(Long choiceId) {
+	    if(choiceId == null) {
+		return null;
+	    }
+	    return choices.stream().filter(q -> choiceId.equals(q.getId())).findAny()
+			.orElse(null);
+	}
+	
+	public Question add(Choice choice) {
+		if(choice.getQuestion() != null && choice.getQuestion() != this) {
+			throw new RuntimeException("Choice already belongs to another question");
+		}
+		choice.setQuestion(this);
+		choices.add(choice);
+		return this;
+	}
+	
+	public Question remove(Choice choice) {
+		if(choice.getQuestion() != this) {
+			throw new RuntimeException("Choice does not belongs to another question");
+		}
+		choices.remove(choice);
+		choice.setQuestion(null);
+		return this;
+	}
 
 }

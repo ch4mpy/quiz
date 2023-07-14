@@ -1,0 +1,11 @@
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:quiz
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create-drop
