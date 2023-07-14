@@ -1,0 +1,157 @@
+scheme: http
+oauth2-issuer: https://oidc.c4-soft.com/auth/realms/master
+oauth2-client-id: change-me
+oauth2-client-secret: change-me
+
+gateway-uri: ${scheme}://localhost:${server.port}
+quiz-api-uri: ${scheme}://localhost:7084
+ui-host: http://localhost:3002
+
+server:
+  port: 8080
+  shutdown: graceful
+  ssl:
+    enabled: false
+
+spring:
+  config:
+    import:
+    - optional:configtree:/workspace/config/
+    - optional:configtree:/workspace/secret/
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  security:
+    oauth2:
+      client:
+        provider:
+          oauth2:
+            issuer-uri: ${oauth2-issuer}
+        registration:
+          authorization-code:
+            authorization-grant-type: authorization_code
+            client-id: ${oauth2-client-id}
+            client-secret: ${oauth2-client-secret}
+            provider: oauth2
+            scope:
+            - openid
+            - profile
+            - email
+            - offline_access
+  cloud:
+    gateway:
+      default-filters:
+      - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Request-Method Access-Control-Request-Headers
+      routes:
+      # Redirection from / to /ui/
+      - id: home
+        uri: ${gateway-uri}
+        predicates:
+        - Path=/
+        filters:
+        - RedirectTo=301,${gateway-uri}/ui
+      # Serve the Angular app through the gateway
+      - id: ui
+        uri: ${ui-host}
+        predicates:
+        - Path=/ui/**
+      # Access the quiz API with BFF pattern
+      - id: quiz-api-bff
+        uri: ${quiz-api-uri}
+        predicates:
+        - Path=/bff/v1/quiz/**
+        filters:
+        - TokenRelay=
+        - SaveSession
+        - StripPrefix=2
+      # Cert-manager http01 challenge for SSL certificates on K8s
+      - id: letsencrypt
+        uri: https://cert-manager-webhook
+        predicates:
+        - Path=/.well-known/acme-challenge/**
+
+com:
+  c4-soft:
+    springaddons:
+      oidc:
+        # Global OAuth2 configuration
+        ops:
+        - iss: ${oauth2-issuer}
+          username-claim: $.preferred_username
+          authorities:
+          - path: $.realm_access.roles
+          - path: $.resource_access.${oauth2-client-id}.roles
+        client:
+          cors:
+          client-uri: ${gateway-uri}
+          security-matchers:
+          - /login/**
+          - /oauth2/**
+          - /
+          - /logout
+          - /bff/v1/**
+          permit-all:
+          - /login/**
+          - /oauth2/**
+          - /
+          - /bff/v1/**
+          csrf: cookie-accessible-from-js
+          post-login-redirect-path: /ui
+          post-logout-redirect-path: /ui
+          back-channel-logout-enabled: true
+          oauth2-logout:
+            authorization-code:
+              uri: ${oauth2-issuer}v2/logout
+              client-id-request-param: client_id
+              post-logout-uri-request-param: returnTo
+          authorization-request-params:
+            authorization-code:
+            - name: audience
+              value: openid-training.c4-soft.com
+        # OAuth2 resource server configuration
+        resourceserver:
+          cors:
+          permit-all:
+          - /ui/**
+          - /resource-server/v1/**
+          - /v3/api-docs/**
+          - /actuator/health/readiness
+          - /actuator/health/liveness
+          - /.well-known/acme-challenge/**
+            
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        security: INFO
+    
+---
+spring:
+  config:
+    activate:
+      on-profile: ssl
+  cloud:
+    gateway:
+      default-filters:
+      - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      - SecureHeaders
+server:
+  ssl:
+    enabled: true
+
+scheme: https

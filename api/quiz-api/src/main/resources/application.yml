@@ -1,0 +1,89 @@
+oauth2-issuer: https://dev-ch4mpy.eu.auth0.com/
+allowed-origins: http://localhost, http://localhost:3000, http://localhost:3002, http://localhost:3003, https://localhost:3402, https://localhost:3403, http://localhost:7082, https://localhost:7082
+
+server:
+  port: 8080
+  error:
+    include-message: always
+  shutdown: graceful
+  ssl:
+    enabled: false
+
+spring:
+  config:
+    import:
+    - optional:configtree:/workspace/config/
+    - optional:configtree:/workspace/secret/
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+com:
+  c4-soft:
+    springaddons:
+      oidc:
+        ops:
+        - iss: ${oauth2-issuer}
+          # Optional: activate audience validation on JWT decoder
+          aud: openid-training.c4-soft.com
+          username-claim: $['https://c4-soft.com/user']['name']
+          authorities:
+          - path: $['https://c4-soft.com/authorities']
+          - path: $.scope
+            prefix: SCOPE_
+        - iss: https://dev-kz80hiel8uxdrskc.us.auth0.com/
+          authorities:
+          - path: $.scope
+            prefix: SCOPE_
+        - iss: https://dev-asouliman.us.auth0.com/
+          authorities:
+          - path: $.scope
+            prefix: SCOPE_
+        - iss: https://dev-v8o77ok3puko7dfx.us.auth0.com/
+          authorities:
+          - path: $.scope
+            prefix: SCOPE_
+        - iss: https://dev-gxakmaorbhkzyz45.us.auth0.com/
+          authorities:
+          - path: $.scope
+            prefix: SCOPE_
+        - iss: https://dev-5quamlkydqkkh4y6.eu.auth0.com/
+          authorities:
+          - path: $.scope
+            prefix: SCOPE_
+        resourceserver:
+          cors:
+          - path: /users/**
+            allowed-origin-patterns: ${allowed-origins}
+          permit-all:
+          - "/users/me"
+          - "/actuator/health/readiness"
+          - "/actuator/health/liveness"
+          - "/v3/api-docs/**"
+        
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+logging:
+  level:
+    '[org.springframework.security]': TRACE
+---
+server:
+  ssl:
+    enabled: true
+
+spring:
+  config:
+    activate:
+      on-profile: ssl

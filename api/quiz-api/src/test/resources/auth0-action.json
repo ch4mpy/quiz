@@ -1,0 +1,9 @@
+{
+  "iss": "https://dev-ch4mpy.eu.auth0.com/",
+  "sub": "oauth2|c4-soft|4dd56dbb-71ef-4fe2-9358-3ae3240a9e42",
+  "aud": [
+    "openid-training.c4-soft.com",
+    "https://dev-ch4mpy.eu.auth0.com/userinfo"
+  ],
+  "scope": "openid email roles:read"
+}
