@@ -1,4 +1,4 @@
-package com.c4soft.quiz.web;
+package com.c4soft.quiz.web.dto;
 
 import java.util.List;
 

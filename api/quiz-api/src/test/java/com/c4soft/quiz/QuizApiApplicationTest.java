@@ -31,11 +31,11 @@ import com.c4soft.quiz.domain.Question;
 import com.c4soft.quiz.domain.QuestionRepository;
 import com.c4soft.quiz.domain.Quiz;
 import com.c4soft.quiz.domain.QuizRepository;
-import com.c4soft.quiz.web.ChoiceUpdateDto;
-import com.c4soft.quiz.web.QuestionUpdateDto;
-import com.c4soft.quiz.web.QuizUpdateDto;
-import com.c4soft.quiz.web.SkillTestDto;
-import com.c4soft.quiz.web.SkillTestQuestionDto;
+import com.c4soft.quiz.web.dto.ChoiceUpdateDto;
+import com.c4soft.quiz.web.dto.QuestionUpdateDto;
+import com.c4soft.quiz.web.dto.QuizUpdateDto;
+import com.c4soft.quiz.web.dto.SkillTestDto;
+import com.c4soft.quiz.web.dto.SkillTestQuestionDto;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;

@@ -26,6 +26,12 @@ import com.c4soft.quiz.domain.Question;
 import com.c4soft.quiz.domain.QuestionRepository;
 import com.c4soft.quiz.domain.Quiz;
 import com.c4soft.quiz.domain.QuizRepository;
+import com.c4soft.quiz.web.dto.ChoiceDto;
+import com.c4soft.quiz.web.dto.ChoiceUpdateDto;
+import com.c4soft.quiz.web.dto.QuestionDto;
+import com.c4soft.quiz.web.dto.QuestionUpdateDto;
+import com.c4soft.quiz.web.dto.QuizDto;
+import com.c4soft.quiz.web.dto.QuizUpdateDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
