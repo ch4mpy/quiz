@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 
 import com.c4_soft.springaddons.security.oauth2.test.webmvc.AutoConfigureAddonsWebmvcResourceServerSecurity;
-import com.c4soft.quiz.SecurityConfig;
 
 /**
  * Avoid MethodArgumentConversionNotSupportedException with repos MockBean

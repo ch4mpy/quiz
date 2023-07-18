@@ -2,7 +2,7 @@ oauth2-issuer: https://oidc.c4-soft.com/auth/realms/master
 oauth2-client-id: quiz
 
 server:
-  port: 8080
+  port: 7084
   error:
     include-message: always
   shutdown: graceful
@@ -63,6 +63,22 @@ logging:
     org:
       springframework:
         security: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: h2
+  datasource:
+    url: jdbc:h2:mem:quiz
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create-drop
+
 ---
 server:
   ssl:

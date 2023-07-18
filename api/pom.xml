@@ -30,6 +30,7 @@
 		<integration-tests.port>8080</integration-tests.port>
 		<ca-certificates.binding>${project.basedir}/bindings/ca-certificates</ca-certificates.binding>
 		<springdoc-openapi.output-dir>${project.basedir}/../../</springdoc-openapi.output-dir>
+		<db-vendor>postgresql</db-vendor>
 	</properties>
 
 	<modules>
