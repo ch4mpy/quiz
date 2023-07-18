@@ -3,10 +3,14 @@ package com.c4soft.quiz;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 
+import com.c4_soft.springaddons.security.oidc.OpenidClaimSet;
 import com.c4_soft.springaddons.security.oidc.starter.LogoutRequestUriBuilder;
 import com.c4_soft.springaddons.security.oidc.starter.properties.SpringAddonsOidcClientProperties;
 import com.c4_soft.springaddons.security.oidc.starter.properties.SpringAddonsOidcProperties;
@@ -26,6 +31,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -48,6 +54,14 @@ public class BffController {
 		this.loginOptions = clientProps.getRegistration().entrySet().stream().filter(e -> "authorization_code".equals(e.getValue().getAuthorizationGrantType()))
 				.map(e -> new LoginOptionDto(e.getValue().getProvider(), "%s/oauth2/authorization/%s".formatted(this.addonsClientProps.getClientUri(), e.getKey())))
 				.toList();
+	}
+
+	@GetMapping(path = "/me", produces = "application/json")
+	public Mono<UserInfoDto> getMe(Authentication auth) {
+		if(auth instanceof AnonymousAuthenticationToken) {
+			return Mono.just(UserInfoDto.ANONYMOUS);
+		}
+		return Mono.just(new UserInfoDto(auth.getName(), auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()));
 	}
 
 	@GetMapping(path = "/login/options", produces = "application/json")
@@ -77,6 +91,10 @@ public class BffController {
 		});
 	}
 
-	static record LoginOptionDto(@NotEmpty String label, @NotEmpty String loginUri) {
+	public static record LoginOptionDto(@NotEmpty String label, @NotEmpty String loginUri) {
+	}
+	
+	public static record UserInfoDto(@NotNull String username, @NotNull List<String> roles) {
+		public static final UserInfoDto ANONYMOUS = new UserInfoDto("", List.of());
 	}
 }

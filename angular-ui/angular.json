@@ -1,0 +1,187 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "quiz": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/quiz",
+      "sourceRoot": "projects/quiz/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "baseHref": "/ui/",
+            "outputPath": "dist/quiz",
+            "index": "projects/quiz/src/index.html",
+            "main": "projects/quiz/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "projects/quiz/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/quiz/src/favicon.ico",
+              "projects/quiz/src/assets"
+            ],
+            "styles": [
+              "@angular/material/prebuilt-themes/indigo-pink.css",
+              "projects/quiz/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "quiz:build:production"
+            },
+            "development": {
+              "browserTarget": "quiz:build:development"
+            },
+            "bravo-ch4mp": {
+              "browserTarget": "quiz:build:development",
+              "host": "0.0.0.0",
+              "ssl": true,
+              "sslCert": "C:/Users/ch4mp/.ssh/bravo-ch4mp_self_signed.crt",
+              "sslKey": "C:/Users/ch4mp/.ssh/bravo-ch4mp_req_key.pem"
+            },
+            "mc-ch4mp": {
+              "browserTarget": "quiz:build:development",
+              "host": "0.0.0.0",
+              "ssl": true,
+              "sslCert": "/Users/ch4mp/.ssh/mc-ch4mp.local_self_signed.crt",
+              "sslKey": "/Users/ch4mp/.ssh/mc-ch4mp.local_req_key.pem"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "quiz:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "projects/quiz/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/quiz/src/favicon.ico",
+              "projects/quiz/src/assets"
+            ],
+            "styles": [
+              "@angular/material/prebuilt-themes/indigo-pink.css",
+              "projects/quiz/src/styles.scss"
+            ],
+            "scripts": []
+          }
+        }
+      }
+    },
+    "@c4-soft/quiz-api": {
+      "projectType": "library",
+      "root": "projects/c4-soft/quiz-api",
+      "sourceRoot": "projects/c4-soft/quiz-api/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/c4-soft/quiz-api/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/c4-soft/quiz-api/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/c4-soft/quiz-api/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "projects/c4-soft/quiz-api/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "@c4-soft/bff-api": {
+      "projectType": "library",
+      "root": "projects/c4-soft/bff-api",
+      "sourceRoot": "projects/c4-soft/bff-api/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/c4-soft/bff-api/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/c4-soft/bff-api/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/c4-soft/bff-api/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "projects/c4-soft/bff-api/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

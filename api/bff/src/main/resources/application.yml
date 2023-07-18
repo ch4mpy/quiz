@@ -5,7 +5,7 @@ oauth2-client-secret: change-me
 
 gateway-uri: ${scheme}://localhost:${server.port}
 quiz-api-uri: ${scheme}://localhost:7084
-ui-host: http://localhost:3002
+ui-host: ${scheme}://localhost:4200
 
 server:
   port: 8080
@@ -26,6 +26,7 @@ spring:
         provider:
           oauth2:
             issuer-uri: ${oauth2-issuer}
+            user-name-attribute: preferred_username
         registration:
           authorization-code:
             authorization-grant-type: authorization_code
@@ -58,7 +59,7 @@ spring:
       - id: quiz-api-bff
         uri: ${quiz-api-uri}
         predicates:
-        - Path=/bff/v1/quizzes/**
+        - Path=/bff/quizzes/v1/**
         filters:
         - TokenRelay=
         - SaveSession
@@ -87,26 +88,19 @@ com:
           - /login/**
           - /oauth2/**
           - /
+          - /me
           - /logout
           - /bff/v1/**
           permit-all:
           - /login/**
           - /oauth2/**
           - /
+          - /me
           - /bff/v1/**
           csrf: cookie-accessible-from-js
           post-login-redirect-path: /ui
           post-logout-redirect-path: /ui
           back-channel-logout-enabled: true
-          oauth2-logout:
-            authorization-code:
-              uri: ${oauth2-issuer}v2/logout
-              client-id-request-param: client_id
-              post-logout-uri-request-param: returnTo
-          authorization-request-params:
-            authorization-code:
-            - name: audience
-              value: openid-training.c4-soft.com
         # OAuth2 resource server configuration
         resourceserver:
           cors:
@@ -139,6 +133,7 @@ logging:
     org:
       springframework:
         security: INFO
+        boot: DEBUG
     
 ---
 spring:

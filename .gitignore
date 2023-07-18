@@ -111,3 +111,6 @@
 
 client-spring/**
 resource-server-spring/**
+
+# OpenAPI specs
+**/*.openapi.json
