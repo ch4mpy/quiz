@@ -1,6 +1,6 @@
 scheme: http
-oauth2-issuer: https://oidc.c4-soft.com/auth/realms/master
-oauth2-client-id: quiz
+oauth2-issuer: https://oidc.c4-soft.com/auth/realms/quiz
+oauth2-client-id: quiz-bff
 oauth2-client-secret: change-me
 
 gateway-uri: ${scheme}://localhost:${server.port}
@@ -56,12 +56,19 @@ spring:
         predicates:
         - Path=/ui/**
       # Access the quiz API with BFF pattern
-      - id: quiz-api-bff
+      - id: quiz-bff
         uri: ${quiz-api-uri}
         predicates:
-        - Path=/bff/quizzes/v1/**
+        - Path=/bff/v1/**
         filters:
         - TokenRelay=
+        - SaveSession
+        - StripPrefix=2
+      - id: quiz-resource-server
+        uri: ${quiz-api-uri}
+        predicates:
+        - Path=/resource-server/v1/**
+        filters:
         - SaveSession
         - StripPrefix=2
       # Cert-manager http01 challenge for SSL certificates on K8s
@@ -77,12 +84,10 @@ com:
         # Global OAuth2 configuration
         ops:
         - iss: ${oauth2-issuer}
-          username-claim: $.preferred_username
+          username-claim: ${spring.security.oauth2.client.provider.oauth2.user-name-attribute}
           authorities:
           - path: $.realm_access.roles
-          - path: $.resource_access.${oauth2-client-id}.roles
         client:
-          cors:
           client-uri: ${gateway-uri}
           security-matchers:
           - /login/**
@@ -90,28 +95,26 @@ com:
           - /
           - /me
           - /logout
-          - /bff/v1/**
+          - /bff/**
           permit-all:
           - /login/**
           - /oauth2/**
           - /
           - /me
-          - /bff/v1/**
+          - /bff/**
           csrf: cookie-accessible-from-js
           post-login-redirect-path: /ui
           post-logout-redirect-path: /ui
-          back-channel-logout-enabled: true
         # OAuth2 resource server configuration
         resourceserver:
-          cors:
           permit-all:
           - /ui/**
-          - /resource-server/v1/**
+          - /resource-server/**
           - /v3/api-docs/**
           - /actuator/health/readiness
           - /actuator/health/liveness
           - /.well-known/acme-challenge/**
-            
+
 management:
   endpoint:
     health:
@@ -133,7 +136,7 @@ logging:
     org:
       springframework:
         security: INFO
-        boot: DEBUG
+        boot: INFO
     
 ---
 spring:
@@ -143,7 +146,7 @@ spring:
   cloud:
     gateway:
       default-filters:
-      - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Request-Method Access-Control-Request-Headers
       - SecureHeaders
 server:
   ssl:

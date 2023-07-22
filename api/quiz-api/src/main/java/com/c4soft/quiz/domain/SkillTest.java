@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -14,6 +15,7 @@ import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,53 +24,52 @@ import lombok.Setter;
 @Data
 @NoArgsConstructor
 public class SkillTest {
-    public SkillTest(String traineeName, Collection<Choice> choices) {
-	this.submittedOn = Instant.now().toEpochMilli();
-	this.choices = new ArrayList<>(choices);
-	this.id.traineeName = traineeName;
-	final var quizIds = this.choices.stream().map(c -> c.getQuestion().getQuiz().getId()).distinct().toList();
-	if(quizIds.size() == 0) {
-	    throw new NotAcceptableSkillTestException("A skill test must contain at least one choice.");
+	public SkillTest(Quiz quiz, String traineeName, Collection<Choice> choices) {
+		this.submittedOn = Instant.now().toEpochMilli();
+		this.choices = new ArrayList<>(choices);
+		this.id.traineeName = traineeName;
+		this.choices.forEach(c -> {
+			if (c.getQuestion() == null || c.getQuestion().getQuiz() == null || !Objects.equals(c.getQuestion().getQuiz().getId(), quiz.getId())) {
+				throw new NotAcceptableSkillTestException("All choices must target the same quiz (%s)".formatted(quiz.getTitle()));
+			}
+		});
+		this.id.quizId = quiz.getId();
 	}
-	if(quizIds.size() > 1) {
-	    throw new NotAcceptableSkillTestException("All choices of test must belong to questions from the same test.");
+
+	@Setter(AccessLevel.NONE)
+	@EmbeddedId
+	private final SkillTestPk id = new SkillTestPk();
+
+	@Column
+	private Long submittedOn;
+
+	@ManyToMany
+	private List<Choice> choices = new ArrayList<>();
+
+	public List<Choice> getChoices(Long questionId) {
+		return choices.stream().filter(c -> Objects.equals(c.getQuestion().getId(), questionId)).toList();
 	}
-	this.id.quizId = quizIds.get(0);
-    }
 
-    @Setter(AccessLevel.NONE)
-    @EmbeddedId
-    SkillTestPk id = new SkillTestPk();
+	@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+	static class NotAcceptableSkillTestException extends RuntimeException {
+		private static final long serialVersionUID = -6754084213295394103L;
 
-    @Column
-    private Long submittedOn;
-
-    @ManyToMany
-    private List<Choice> choices = new ArrayList<>();
-
-    public List<Choice> getChoices(Long questionId) {
-	return choices.stream().filter(c -> c.getQuestion().getId() == questionId).toList();
-    }
-
-    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    static class NotAcceptableSkillTestException extends RuntimeException {
-	private static final long serialVersionUID = -6754084213295394103L;
-
-	public NotAcceptableSkillTestException(String message) {
-	    super(message);
+		public NotAcceptableSkillTestException(String message) {
+			super(message);
+		}
 	}
-    }
-    
-    @Embeddable
-    @Data
-    @NoArgsConstructor
-    public static class SkillTestPk {
-	    @Setter(AccessLevel.NONE)
-	    @Column
-	    private Long quizId;
 
-	    @Setter(AccessLevel.NONE)
-	    @Column
-	    private String traineeName;
-    }
+	@Embeddable
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class SkillTestPk {
+		@Setter(AccessLevel.NONE)
+		@Column
+		private Long quizId;
+
+		@Setter(AccessLevel.NONE)
+		@Column
+		private String traineeName;
+	}
 }

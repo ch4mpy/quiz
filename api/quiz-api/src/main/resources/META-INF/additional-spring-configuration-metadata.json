@@ -8,5 +8,15 @@
     "name": "oauth2-client-id",
     "type": "java.lang.String",
     "description": "client-id used for resource_access roles"
+  },
+  {
+    "name": "keycloak-host",
+    "type": "java.lang.String",
+    "description": "Scheme, hostname and port for Keycloak server"
+  },
+  {
+    "name": "keycloak-realm",
+    "type": "java.lang.String",
+    "description": "Keycloak 'realm'"
   }
 ]}

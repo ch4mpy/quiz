@@ -1,6 +1,12 @@
-# AngularUi
+# C4 - Quiz
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.0.
+A simple app around multiple choices questionnaires.
+
+Instructors can define quizzes and trainees have those tests.
+
+No account is required to answer a quiz (and see expected answers), but trainees must be identified to submit their result to the author of the quiz. Only the last submission of each trainee is stored.
+
+An "instructor" account is required to create a quiz. Instructors may edit the quizzes they authored and see all the submitted answers.
 
 ## Development server
 

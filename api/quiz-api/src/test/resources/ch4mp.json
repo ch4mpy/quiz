@@ -2,20 +2,9 @@
   "preferred_username": "ch4mp",
   "realm_access": {
     "roles": [
-    	"USER_ROLES_EDITOR", "AUTHOR"
+        "trainer",
+        "moderator"
   	]
-  },
-  "resource_access": {
-    "quiz": {
-      "roles": [
-        "former"
-      ]
-    }, 
-    "spring-addons": {
-      "roles": [
-        "nice"
-      ]
-    }
   },
   "scope": "openid email"
 }

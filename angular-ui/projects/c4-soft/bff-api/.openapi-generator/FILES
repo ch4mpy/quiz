@@ -3,13 +3,10 @@ api.module.ts
 api/api.ts
 api/bFF.service.ts
 api/bFF.serviceInterface.ts
-api/backChannelLogoutController.service.ts
-api/backChannelLogoutController.serviceInterface.ts
 configuration.ts
 encoder.ts
 index.ts
 model/loginOptionDto.ts
 model/models.ts
-model/userInfoDto.ts
 param.ts
 variables.ts

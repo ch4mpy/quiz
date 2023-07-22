@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { UserService } from './user.service';
 import { BFFApi } from '@c4-soft/bff-api';
+import { MatDialog } from '@angular/material/dialog';
+import { QuizCreationDialog } from './quiz-creation.dialog';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-toolbar',
@@ -9,6 +12,8 @@ import { BFFApi } from '@c4-soft/bff-api';
     <mat-icon>menu</mat-icon>
   </button>
   <span>Quiz by ch4mpy</span>
+  <span class="spacer"></span>
+  <span>{{ title }}</span>
   <span class="spacer"></span>
   <button
     *ngIf="!currentUser.isAuthenticated"
@@ -26,14 +31,18 @@ import { BFFApi } from '@c4-soft/bff-api';
   </span>
 </mat-toolbar>
 <mat-menu #mainMenu="matMenu">
-  <button *ngIf="currentUser.hasAnyRole('former', 'moderator')" mat-menu-item>Create Quiz</button>
-  <button mat-menu-item>Skill test</button>
+  <button mat-menu-item (click)="openQuizSelectionPage()">Quizzes</button>
+  <button mat-menu-item *ngIf="currentUser.isTrainer" (click)="openSkillTestSelectionPage()">Trainees tests</button>
 </mat-menu>`,
   styles: [
   ]
 })
 export class ToolbarComponent {
-  constructor(private user: UserService, private bff: BFFApi) {}
+
+  @Input()
+  title!: string
+
+  constructor(private user: UserService, private bff: BFFApi, private dialog: MatDialog, private router: Router) {}
 
   get currentUser() {
     return this.user.current;
@@ -49,5 +58,13 @@ export class ToolbarComponent {
 
   logout() {
     this.user.logout();
+  }
+
+  openQuizSelectionPage() {
+    this.router.navigate(['/'])
+  }
+
+  openSkillTestSelectionPage() {
+    this.router.navigate(['/', 'tests'])
   }
 }

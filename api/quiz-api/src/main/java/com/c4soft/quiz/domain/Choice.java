@@ -17,6 +17,11 @@ public class Choice {
 		this.label = label;
 		this.isGood = isGood;
 	}
+	
+	public Choice(Choice other) {
+		this.label = other.label;
+		this.isGood = other.isGood;
+	}
 
 	@Id
 	@GeneratedValue
@@ -24,7 +29,7 @@ public class Choice {
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "question_id", updatable = false, nullable = false)
-	Question question;
+	private Question question;
 	
 	@Column
 	private String label;

@@ -1,8 +1,29 @@
 /* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+@include mat.core();
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .spacer {
   flex: 1 1 auto;
+}
+
+.item-button {
+  margin: 1em;
+}
+
+.item-mini-button {
+  margin: .5em;
+}
+
+.page-body {
+  width: 100%;
+  max-width: 1280px;
+  margin: auto;
+}
+
+.warn-color {
+  color: mat.get-color-from-palette(mat.$red-palette, 500);
 }

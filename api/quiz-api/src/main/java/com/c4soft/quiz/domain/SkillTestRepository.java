@@ -8,10 +8,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface SkillTestRepository extends JpaRepository<SkillTest, Long>, JpaSpecificationExecutor<SkillTest> {
+import com.c4soft.quiz.domain.SkillTest.SkillTestPk;
+
+public interface SkillTestRepository extends JpaRepository<SkillTest, SkillTestPk>, JpaSpecificationExecutor<SkillTest> {
 	Optional<SkillTest> findByIdQuizIdAndIdTraineeName(Long quizId, String traineeName);
 
 	List<SkillTest> findByIdQuizId(Long quizId);
+
+	void deleteByIdQuizId(Long quizId);
 
 	static Specification<SkillTest> quizIdSpec(Long quizId) {
 		return (skillTest, cq, cb) -> cb.equal(skillTest.get("id").get("quizId"), quizId);
@@ -29,11 +33,14 @@ public interface SkillTestRepository extends JpaRepository<SkillTest, Long>, Jpa
 		return (skillTest, cq, cb) -> cb.le(skillTest.get("submittedOn"), until);
 	}
 
-	static Specification<SkillTest> spec(Long quizId, Long since, Optional<Long> until, Optional<String> traineeName) {
-		final var spec = Specification.where(quizIdSpec(quizId));
-		spec.and(sinceSpec(since));
-		spec.and(untilSpec(until.orElse(Instant.now().toEpochMilli())));
-		traineeName.ifPresent(n -> spec.and(traineeNameSpec(n)));
-		return spec;
+	static Specification<SkillTest> orderByIdDesc(Specification<SkillTest> spec) {
+		return (root, query, cb) -> {
+			query.orderBy(cb.desc(root.get(SkillTest_.id)));
+			return spec.toPredicate(root, query, cb);
+		};
+	}
+
+	static Specification<SkillTest> spec(Long quizId, Long since, Optional<Long> until) {
+		return orderByIdDesc(Specification.where(quizIdSpec(quizId)).and(sinceSpec(since)).and(untilSpec(until.orElse(Instant.now().toEpochMilli()))));
 	}
 }

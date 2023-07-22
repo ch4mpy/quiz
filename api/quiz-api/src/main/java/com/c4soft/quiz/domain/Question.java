@@ -30,6 +30,17 @@ public class Question {
 			this.add(c);
 		}
 	}
+	
+	public Question(Question other) {
+		this.comment = other.comment;
+		this.label = other.label;
+		this.priority = other.priority;
+		this.choices = new ArrayList<>(other.choices.size());
+		for(var c : other.choices) {
+			final var choice = new Choice(c);
+			this.add(choice);
+		}
+	}
 
 	@Id
 	@GeneratedValue
@@ -37,7 +48,7 @@ public class Question {
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "quiz_id", updatable = false, nullable = false)
-	Quiz quiz;
+	private Quiz quiz;
 	
 	@Column
 	private String label;
@@ -49,7 +60,7 @@ public class Question {
 	@OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Choice> choices = new ArrayList<>();
 	
-	@Column
+	@Column(length = 2048)
 	private String comment;
 	
 	public List<Choice> getChoices() {

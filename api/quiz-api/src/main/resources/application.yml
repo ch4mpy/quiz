@@ -1,5 +1,7 @@
-oauth2-issuer: https://oidc.c4-soft.com/auth/realms/master
-oauth2-client-id: quiz
+keycloak-host: https://oidc.c4-soft.com
+keycloak-realm: quiz
+oauth2-issuer: ${keycloak-host}/auth/realms/${keycloak-realm}
+ui-uri: https://localhost:8080/ui
 
 server:
   port: 7084
@@ -25,6 +27,42 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
+    show-sql: false
+  cloud:
+    openfeign:
+      client:
+        config:
+          keycloak-admin-api:
+            url: ${keycloak-host}/auth/admin/realms/${keycloak-realm}
+      oauth2:
+        enabled: true
+        clientRegistrationId: quiz-admin
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ch4mp@c4-soft.com
+    password: change-me
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${oauth2-issuer}
+        registration:
+          quiz-admin:
+            provider: keycloak
+            client-id: quiz-admin
+            client-secret: change-me
+            authorization-grant-type: client_credentials
+            scope:
+            - openid
+            - offline_access
 
 com:
   c4-soft:
@@ -35,9 +73,9 @@ com:
           username-claim: preferred_username
           authorities:
           - path: $.realm_access.roles
-          - path: $.resource_access.${oauth2-client-id}.roles
         resourceserver:
           permit-all:
+          - "/users/me"
           - "/quizzes/**"
           - "/actuator/health/readiness"
           - "/actuator/health/liveness"
@@ -62,7 +100,7 @@ logging:
   level:
     org:
       springframework:
-        security: DEBUG
+        security: INFO
 
 ---
 spring:

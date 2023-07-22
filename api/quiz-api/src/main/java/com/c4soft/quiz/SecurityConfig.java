@@ -10,22 +10,22 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimNames;
 
-import com.c4_soft.springaddons.security.oidc.OAuthentication;
 import com.c4_soft.springaddons.security.oidc.OpenidClaimSet;
 import com.c4_soft.springaddons.security.oidc.starter.properties.SpringAddonsOidcProperties;
 import com.c4_soft.springaddons.security.oidc.starter.synchronised.resourceserver.JwtAbstractAuthenticationTokenConverter;
+import com.c4soft.quiz.domain.QuizAuthentication;
 
 @Configuration
 @EnableMethodSecurity()
 public class SecurityConfig {
-	@Bean
-	JwtAbstractAuthenticationTokenConverter authenticationFactory(
-			Converter<Map<String, Object>, Collection<? extends GrantedAuthority>> authoritiesConverter,
-			SpringAddonsOidcProperties addonsProperties) {
-		return jwt -> {
-			final var opProperties = addonsProperties.getOpProperties(jwt.getClaims().get(JwtClaimNames.ISS));
-			final var claims = new OpenidClaimSet(jwt.getClaims(), opProperties.getUsernameClaim());
-			return new OAuthentication<>(claims, authoritiesConverter.convert(claims), jwt.getTokenValue());
-		};
-	}
+    @Bean
+    JwtAbstractAuthenticationTokenConverter authenticationFactory(
+            Converter<Map<String, Object>, Collection<? extends GrantedAuthority>> authoritiesConverter,
+            SpringAddonsOidcProperties addonsProperties) {
+        return jwt -> {
+            final var opProperties = addonsProperties.getOpProperties(jwt.getClaims().get(JwtClaimNames.ISS));
+            final var claims = new OpenidClaimSet(jwt.getClaims(), opProperties.getUsernameClaim());
+            return new QuizAuthentication(claims, authoritiesConverter.convert(claims), jwt.getTokenValue());
+        };
+    }
 }
