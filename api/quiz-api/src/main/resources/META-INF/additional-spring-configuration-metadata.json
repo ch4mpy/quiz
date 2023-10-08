@@ -18,5 +18,10 @@
     "name": "keycloak-realm",
     "type": "java.lang.String",
     "description": "Keycloak 'realm'"
+  },
+  {
+    "name": "ui-external-uri",
+    "type": "java.net.URI",
+    "description": "Base URI for UI. Used to build URI in email to trainers when a skill-test is submitted."
   }
 ]}

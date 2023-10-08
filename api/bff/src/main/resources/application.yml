@@ -1,7 +1,7 @@
 scheme: http
-oauth2-issuer: https://oidc.c4-soft.com/auth/realms/quiz
-oauth2-client-id: quiz-bff
-oauth2-client-secret: change-me
+keycloak-host: https://oidc.c4-soft.com
+keycloak-realm: quiz
+oauth2-issuer: ${keycloak-host}/auth/realms/${keycloak-realm}
 
 gateway-uri: ${scheme}://localhost:${server.port}
 quiz-api-uri: ${scheme}://localhost:7084
@@ -24,15 +24,15 @@ spring:
     oauth2:
       client:
         provider:
-          oauth2:
+          keycloak:
             issuer-uri: ${oauth2-issuer}
             user-name-attribute: preferred_username
         registration:
-          authorization-code:
+          quiz-bff:
+            provider: keycloak
+            client-id: quiz-bff
+            client-secret: change-me
             authorization-grant-type: authorization_code
-            client-id: ${oauth2-client-id}
-            client-secret: ${oauth2-client-secret}
-            provider: oauth2
             scope:
             - openid
             - profile
@@ -49,7 +49,7 @@ spring:
         predicates:
         - Path=/
         filters:
-        - RedirectTo=301,${gateway-uri}/ui
+        - RedirectTo=301,${gateway-uri}/ui/
       # Serve the Angular app through the gateway
       - id: ui
         uri: ${ui-host}
@@ -103,8 +103,8 @@ com:
           - /me
           - /bff/**
           csrf: cookie-accessible-from-js
-          post-login-redirect-path: /ui
-          post-logout-redirect-path: /ui
+          post-login-redirect-path: /ui/
+          post-logout-redirect-path: /ui/
         # OAuth2 resource server configuration
         resourceserver:
           permit-all:

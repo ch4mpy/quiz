@@ -1,7 +1,8 @@
+scheme: http
 keycloak-host: https://oidc.c4-soft.com
 keycloak-realm: quiz
 oauth2-issuer: ${keycloak-host}/auth/realms/${keycloak-realm}
-ui-uri: https://localhost:8080/ui
+ui-external-uri: ${scheme}://localhost:8080/ui
 
 server:
   port: 7084
@@ -126,3 +127,5 @@ spring:
   config:
     activate:
       on-profile: ssl
+
+scheme: https

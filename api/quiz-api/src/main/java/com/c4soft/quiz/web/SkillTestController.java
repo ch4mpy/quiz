@@ -1,7 +1,6 @@
 package com.c4soft.quiz.web;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public class SkillTestController {
 	private final QuizRepository quizRepo;
 	private final KeycloakAdminApiClient keycloakAdminApi;
 	private final JavaMailSender mailSender;
-	@Value("${ui-uri}")
+	@Value("${ui-external-uri}")
 	URI uiUri;
 
 	@GetMapping(path = "/{quizId}", produces = MediaType.APPLICATION_JSON_VALUE)

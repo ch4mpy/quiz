@@ -12,7 +12,6 @@ encoder.ts
 git_push.sh
 index.ts
 karma.conf.js
-package.json
 package-lock.json
 param.ts
 README.md

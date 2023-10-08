@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+ <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -16,7 +16,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<java.version>21</java.version>
+		<java.version>17</java.version>
 		<spring-cloud-dependencies.version>2022.0.4</spring-cloud-dependencies.version>
 		<com.c4-soft.springaddons.version>7.1.10</com.c4-soft.springaddons.version>
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
@@ -24,12 +24,11 @@
 		<swagger-annotations.version>2.2.15</swagger-annotations.version>
 		<springdoc-openapi.version>2.2.0</springdoc-openapi.version>
 		<springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
-		<springdoc-openapi.output-dir>${project.basedir}/../../angular-ui</springdoc-openapi.output-dir>
 		<integration-tests.scheme>http</integration-tests.scheme>
 		<integration-tests.hostname>localhost</integration-tests.hostname>
 		<integration-tests.port>8080</integration-tests.port>
 		<ca-certificates.binding>${project.basedir}/bindings/ca-certificates</ca-certificates.binding>
-		<springdoc-openapi.output-dir>${project.basedir}/../../</springdoc-openapi.output-dir>
+		<springdoc-openapi.output-dir>${project.basedir}/../../angular-ui</springdoc-openapi.output-dir>
 		<db-vendor>postgresql</db-vendor>
 	</properties>
 
@@ -37,7 +36,7 @@
 		<module>bff</module>
 		<module>quiz-api</module>
 	</modules>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -47,7 +46,7 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.swagger.core.v3</groupId>
 				<artifactId>swagger-annotations</artifactId>
@@ -73,7 +72,7 @@
 				<artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
 				<version>${springdoc-openapi.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.mapstruct</groupId>
 				<artifactId>mapstruct</artifactId>
@@ -89,7 +88,7 @@
 				<artifactId>mapstruct-processor</artifactId>
 				<version>${org.mapstruct.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.c4-soft.springaddons</groupId>
 				<artifactId>spring-addons-starter-oidc</artifactId>
@@ -102,7 +101,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -142,18 +141,13 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.graalvm.buildtools</groupId>
-					<artifactId>native-maven-plugin</artifactId>
-					<configuration>
-					</configuration>
-				</plugin>
-				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<configuration>
 						<image>
 							<bindings>
-								<binding>${ca-certificates.binding}:/platform/bindings/ca-certificates:ro</binding>
+								<binding>
+									${ca-certificates.binding}:/platform/bindings/ca-certificates:ro</binding>
 							</bindings>
 						</image>
 						<excludes>
@@ -169,7 +163,8 @@
 					<artifactId>springdoc-openapi-maven-plugin</artifactId>
 					<version>${springdoc-openapi-maven-plugin.version}</version>
 					<configuration>
-						<apiDocsUrl>${integration-tests.scheme}://${integration-tests.hostname}:${integration-tests.port}/v3/api-docs</apiDocsUrl>
+						<apiDocsUrl>
+							${integration-tests.scheme}://${integration-tests.hostname}:${integration-tests.port}/v3/api-docs</apiDocsUrl>
 						<outputFileName>${project.artifactId}.openapi.json</outputFileName>
 						<outputDir>${springdoc-openapi.output-dir}</outputDir>
 						<skip>false</skip>

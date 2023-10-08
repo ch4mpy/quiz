@@ -10,14 +10,14 @@
     "description": "Authorization server 'issuer' URI"
   },
   {
-    "name": "oauth2-client-id",
+    "name": "keycloak-host",
     "type": "java.lang.String",
-    "description": "OAuth2 client ID for the gateway"
+    "description": "Scheme, hostname and port for Keycloak server"
   },
   {
-    "name": "oauth2-client-secret",
+    "name": "keycloak-realm",
     "type": "java.lang.String",
-    "description": "OAuth2 client secret for the gateway"
+    "description": "Keycloak 'realm'"
   },
   {
     "name": "gateway-uri",
