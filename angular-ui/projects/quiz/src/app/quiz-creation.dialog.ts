@@ -10,7 +10,7 @@ import { ErrorDialog } from './error.dialog';
       <span>New Quiz</span>
     </mat-toolbar>
     <div style="margin: 1em;">
-      <form [formGroup]="creationForm" (submit)="createQuiz()">
+      <form [formGroup]="creationForm">
         <mat-form-field>
           <mat-label>Title</mat-label>
           <input
@@ -54,6 +54,7 @@ import { ErrorDialog } from './error.dialog';
           aria-label="Create new quiz"
           type="submit"
           [disabled]="creationForm.invalid"
+          (click)="createQuiz()"
         >
           <mat-icon>add</mat-icon>
         </button>

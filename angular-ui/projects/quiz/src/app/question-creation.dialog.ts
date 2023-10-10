@@ -1,12 +1,15 @@
 import { Component, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { QuizzesApi } from '@c4-soft/quiz-api';
 import { ErrorDialog } from './error.dialog';
 
 export interface QuestionCreationDialogData {
-  quizId: number
+  quizId: number;
 }
 
 @Component({
@@ -14,7 +17,7 @@ export interface QuestionCreationDialogData {
   template: `<mat-toolbar>
       <span>New Question</span>
     </mat-toolbar>
-    <form [formGroup]="creationForm" (submit)="createQuestion()">
+    <form [formGroup]="creationForm">
       <mat-form-field>
         <mat-label>Label</mat-label>
         <input
@@ -39,13 +42,13 @@ export interface QuestionCreationDialogData {
         aria-label="Create new question"
         type="submit"
         [disabled]="creationForm.invalid"
+        (click)="createQuestion()"
       >
         <mat-icon>add</mat-icon>
       </button>
     </form>`,
   styles: [],
 })
-
 export class QuestionCreationDialog {
   creationForm = new FormGroup({
     labelInput: new FormControl('', [Validators.required]),
@@ -56,12 +59,12 @@ export class QuestionCreationDialog {
     @Inject(MAT_DIALOG_DATA) private data: QuestionCreationDialogData,
     private dialogRef: MatDialogRef<QuestionCreationDialog>,
     private quizApi: QuizzesApi,
-    private dialog: MatDialog,
+    private dialog: MatDialog
   ) {}
 
   createQuestion() {
-    if(this.creationForm.invalid) {
-      return
+    if (this.creationForm.invalid) {
+      return;
     }
     this.quizApi
       .addQuestion(
@@ -74,7 +77,7 @@ export class QuestionCreationDialog {
       )
       .subscribe({
         next: (resp) => {
-          var questionId = resp.headers.get('Location')
+          var questionId = resp.headers.get('Location');
           this.dialogRef.close(questionId ? +questionId : null);
         },
         error: (error) => {

@@ -16,12 +16,12 @@ import { FormControl, FormGroup } from '@angular/forms';
         <div class="spacer"></div>
         <div [formGroup]="quizFilterForm">
           <mat-form-field style="margin: 1em;">
-            <mat-label>Author</mat-label>
-            <input matInput formControlName="author" />
-          </mat-form-field>
-          <mat-form-field style="margin: 1em;">
             <mat-label>Title</mat-label>
             <input matInput formControlName="title" />
+          </mat-form-field>
+          <mat-form-field style="margin: 1em;">
+            <mat-label>Author</mat-label>
+            <input matInput formControlName="author" />
           </mat-form-field>
         </div>
         <div class="spacer"></div>
@@ -150,9 +150,9 @@ export class QuizSelectionPage implements OnInit {
 
   openQuizCreationDialog() {
     const dialogRef = this.dialog.open(QuizCreationDialog);
-    dialogRef.afterClosed().subscribe(quizId => {
-      if(!!quizId) {
-        this.openQuizDetails(quizId, true)
+    dialogRef.afterClosed().subscribe((quizId) => {
+      if (!!quizId) {
+        this.openQuizDetails(quizId, true);
       } else {
         this.loadQuizzes();
       }

@@ -31,8 +31,10 @@ import { Router } from '@angular/router';
   </span>
 </mat-toolbar>
 <mat-menu #mainMenu="matMenu">
-  <button mat-menu-item (click)="openQuizSelectionPage()">Quizzes</button>
-  <button mat-menu-item *ngIf="currentUser.isTrainer" (click)="openSkillTestSelectionPage()">Trainees tests</button>
+  <button mat-menu-item [routerLink]="['/', 'quizzes']">Quizzes</button>
+  <button mat-menu-item *ngIf="currentUser.isTrainer" [routerLink]="['/', 'tests']">Trainees tests</button>
+  <button mat-menu-item [routerLink]="['/', 'privacy']">Privacy Policy</button>
+  <a mat-menu-item href="https://oidc.c4-soft.com/auth/realms/quiz/account/">account</a>
 </mat-menu>`,
   styles: [
   ]
@@ -58,13 +60,5 @@ export class ToolbarComponent {
 
   logout() {
     this.user.logout();
-  }
-
-  openQuizSelectionPage() {
-    this.router.navigate(['/'])
-  }
-
-  openSkillTestSelectionPage() {
-    this.router.navigate(['/', 'tests'])
   }
 }

@@ -4,10 +4,12 @@ import { QuizSelectionPage } from './quiz-selection.page';
 import { QuizDetailsPage } from './quiz-details.page';
 import { SkillTestSelectionPage } from './skill-test-selection.page';
 import { SkillTestDetailsPage } from './skill-test-details.page';
+import { PrivacyPolicyPage } from './privacy-policy.page';
 
 export const routes: Routes = [
   { path: 'quizzes', component: QuizSelectionPage },
   { path: 'quizzes/:quizId', component: QuizDetailsPage },
+  { path: 'privacy', component: PrivacyPolicyPage },
   { path: 'tests', component: SkillTestSelectionPage },
   { path: 'tests/:quizId/:traineeName', component: SkillTestDetailsPage },
   { path: '**',   redirectTo: '/quizzes' }

@@ -57,6 +57,7 @@ import { SkillTestDetailsPage } from './skill-test-details.page';
 import { SkillTestSelectionPage } from './skill-test-selection.page';
 import { ToolbarComponent } from './toolbar.component';
 import { SkillTestResultDialog } from './skill-test-result.dialog';
+import { PrivacyPolicyPage } from './privacy-policy.page';
 
 export function bffApiConfigFactory(): BffApiConfiguration {
   const params: BffApiConfigurationParameters = {
@@ -88,6 +89,7 @@ export function quizApiConfigFactory(): QuizApiConfiguration {
     SkillTestSelectionPage,
     SkillTestDetailsPage,
     SkillTestResultDialog,
+    PrivacyPolicyPage,
   ],
   imports: [
     BrowserModule,

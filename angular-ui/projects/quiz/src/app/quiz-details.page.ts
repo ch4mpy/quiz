@@ -412,6 +412,9 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
           this.quizOptionsForm.controls.isReplayDisabled.patchValue(
             !dto.isReplayEnabled
           );
+          this.quizOptionsForm.controls.isTrainerNotifiedOfNewTests.patchValue(
+            dto.isTrainerNotifiedOfNewTests
+          );
           if (!!selectedQuestionId) {
             this.setFocused(
               this.quiz?.questions.find(
