@@ -328,6 +328,7 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
         });
       } else {
         this.isInEditMode$.next(!this.isInEditMode$.value);
+        this.loadQuiz();
       }
     }
   }
@@ -464,11 +465,11 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
       this.quizApi
         .updateQuiz(this.quiz?.id || -1, {
           title: title || this.quiz?.title || '',
-          isChoicesShuffled: this.quiz?.isChoicesShuffled || true,
-          isPerQuestionResult: this.quiz?.isPerQuestionResult || true,
-          isReplayEnabled: this.quiz?.isReplayEnabled || true,
+          isChoicesShuffled: !!this.quiz?.isChoicesShuffled,
+          isPerQuestionResult: !!this.quiz?.isPerQuestionResult,
+          isReplayEnabled: !!this.quiz?.isReplayEnabled,
           isTrainerNotifiedOfNewTests:
-            this.quiz?.isTrainerNotifiedOfNewTests || false,
+            !!this.quiz?.isTrainerNotifiedOfNewTests,
         })
         .subscribe({
           next: () => {
