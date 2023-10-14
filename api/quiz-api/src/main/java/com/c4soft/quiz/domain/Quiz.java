@@ -56,10 +56,10 @@ public class Quiz {
 	@Column(nullable = false, updatable = false)
 	private String authorName;
 
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "boolean default false")
 	private Boolean isSubmitted = false;
 
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "boolean default false")
 	private Boolean isPublished = false;
 
 	@OneToOne(optional = true)

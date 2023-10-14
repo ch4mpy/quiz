@@ -108,6 +108,7 @@ com:
         # OAuth2 resource server configuration
         resourceserver:
           permit-all:
+          - /login-options
           - /ui/**
           - /resource-server/**
           - /v3/api-docs/**

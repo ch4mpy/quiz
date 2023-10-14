@@ -137,13 +137,12 @@ export class QuizSelectionPage implements OnInit {
       )
       .subscribe({
         next: (quizzes) => {
+          this.isLoading = false;
           this.quizzes = quizzes;
         },
         error: () => {
-          this.quizzes = [];
-        },
-        complete: () => {
           this.isLoading = false;
+          this.quizzes = [];
         },
       });
   }
