@@ -83,8 +83,8 @@
               "browserTarget": "quiz:build:development",
               "host": "0.0.0.0",
               "ssl": true,
-              "sslCert": "/Users/ch4mp/.ssh/mc-ch4mp_self_signed.crt",
-              "sslKey": "/Users/ch4mp/.ssh/mc-ch4mp_req_key.pem"
+              "sslCert": "/Users/ch4mp/.ssh/mc-ch4mp.local_self_signed.crt",
+              "sslKey": "/Users/ch4mp/.ssh/mc-ch4mp.local_req_key.pem"
             }
           },
           "defaultConfiguration": "development"

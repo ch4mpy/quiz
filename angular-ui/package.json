@@ -6,6 +6,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build quiz",
+    "api": "npm run bff-api && npm run quiz-api",
     "bff-api:generate": "npx openapi-generator-cli generate -i ./bff.openapi.json -g typescript-angular --type-mappings AnyType=any --additional-properties=serviceSuffix=Api,npmName=@c4-soft/bff-api,npmVersion=0.0.1,stringEnums=true,enumPropertyNaming=camelCase,supportsES6=true,withInterfaces=true --remove-operation-id-prefix -o projects/c4-soft/bff-api",
     "bff-api:build": "npm run ng -- build @c4-soft/bff-api --configuration production",
     "bff-api": "npm run bff-api:generate && npm run bff-api:build",

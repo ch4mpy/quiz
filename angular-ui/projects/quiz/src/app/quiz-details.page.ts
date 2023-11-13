@@ -69,26 +69,37 @@ import { UserService } from './user.service';
           <mat-icon>close</mat-icon>
         </button>
         <button
-          *ngIf="canEditQuiz && (isInEditMode$ | async)"
-          (click)="toggleEditMode()"
+          *ngIf="isTrainer && !!quiz?.isPublished"
+          (click)="createCopy()"
           mat-fab
           color="primary"
-          aria-label="Quit edition mode"
-          matTooltip="Quit edition mode"
+          aria-label="Create a copy as new draft"
+          matTooltip="Create a copy as new draft"
           class="item-button"
         >
-          <mat-icon>edit_off</mat-icon>
+          <mat-icon>content_copy</mat-icon>
         </button>
         <button
           *ngIf="canEditQuiz && !(isInEditMode$ | async)"
-          (click)="toggleEditMode()"
+          (click)="edit()"
+          mat-fab
+          color="primary"
+          aria-label="Edit"
+          matTooltip="Edit"
+          class="item-button"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button
+          *ngIf="!!(isInEditMode$ | async)"
+          (click)="editOff()"
           mat-fab
           color="primary"
           aria-label="Edit"
           matTooltip="Create or open draft to edit text (will require moderation)"
           class="item-button"
         >
-          <mat-icon>edit</mat-icon>
+          <mat-icon>edit_off</mat-icon>
         </button>
       </div>
       <h2 *ngIf="!isAuthenticated" style="width: 100%;">
@@ -234,7 +245,7 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
 
   get canEditQuiz(): boolean {
     return (
-      this.quiz?.authorName === this.user.current.name && !this.quiz.isReplaced
+      this.quiz?.authorName === this.user.current.name && !this.quiz.isReplaced && (this.user.current.isModerator || !this.quiz?.isPublished)
     );
   }
 
@@ -244,6 +255,10 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
 
   get isAuthenticated(): boolean {
     return this.user.current.isAuthenticated;
+  }
+
+  get isTrainer(): boolean {
+    return this.user.current.isTrainer;
   }
 
   get isTestComplete(): boolean {
@@ -303,34 +318,42 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
     }
   }
 
-  toggleEditMode() {
-    if (this.quiz?.draftId) {
-      this.router.navigate(['/', 'quizzes', this.quiz?.draftId], {
-        queryParams: { edit: true },
-      });
-    } else if (this.quiz?.id) {
-      if (this.quiz.isPublished) {
-        this.quizApi.createDraft(this.quiz.id, 'response').subscribe({
-          next: (response) => {
-            const draftId = response.headers.get('Location');
-            if (!!draftId) {
-              this.isInEditMode$.next(true);
-              this.router.navigate(['/', 'quizzes', draftId], {
-                queryParams: { edit: true },
-              });
-            } else {
-              this.dialog.open(ErrorDialog, {
-                data: 'Failed to retrieve new draft ID.',
-              });
-            }
-          },
-          error: (error) => this.dialog.open(ErrorDialog, { data: error }),
-        });
-      } else {
-        this.isInEditMode$.next(!this.isInEditMode$.value);
-        this.loadQuiz();
-      }
+  createCopy() {
+    if (!this.quiz?.id) {
+      return;
     }
+    this.quizApi.createDraft(this.quiz.id, 'response').subscribe({
+      next: (response) => {
+        const draftId = response.headers.get('Location');
+        if (!!draftId) {
+          this.isInEditMode$.next(true);
+          this.router.navigate(['/', 'quizzes', draftId], {
+            queryParams: { edit: true },
+          });
+        } else {
+          this.dialog.open(ErrorDialog, {
+            data: 'Failed to retrieve new draft ID.',
+          });
+        }
+      },
+      error: (error) => this.dialog.open(ErrorDialog, { data: error }),
+    });
+  }
+
+  edit() {
+    if (!!this.quiz?.isReplaced) {
+      return;
+    }
+    if (!this.user.current.isModerator && !!this.quiz?.isPublished) {
+      return;
+    }
+    this.isInEditMode$.next(true);
+    this.loadQuiz();
+  }
+
+  editOff() {
+    this.isInEditMode$.next(false);
+    this.loadQuiz();
   }
 
   submitDraft() {
@@ -340,7 +363,7 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
         next: () => {
           this.isLoading = false;
           if (this.user.current.isModerator) {
-            this.toggleEditMode();
+            this.isInEditMode$.next(false);
           }
           this.loadQuiz();
         },
@@ -468,8 +491,7 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
           isChoicesShuffled: !!this.quiz?.isChoicesShuffled,
           isPerQuestionResult: !!this.quiz?.isPerQuestionResult,
           isReplayEnabled: !!this.quiz?.isReplayEnabled,
-          isTrainerNotifiedOfNewTests:
-            !!this.quiz?.isTrainerNotifiedOfNewTests,
+          isTrainerNotifiedOfNewTests: !!this.quiz?.isTrainerNotifiedOfNewTests,
         })
         .subscribe({
           next: () => {
@@ -520,10 +542,15 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
 
   submitAnswer() {
     this.isLoading = true;
-    this.skillTestApi.submitSkillTest(this.skillTest).subscribe({
-      next: (skillTest) => {
+    this.skillTestApi.submitSkillTest(this.skillTest, 'response').subscribe({
+      next: (response) => {
         this.isLoading = false;
-        this.dialog.open(SkillTestResultDialog, { data: skillTest });
+        this.dialog.open(SkillTestResultDialog, { data: {
+          dto: response.body,
+          testUri: response.headers.get('Location'),
+          isAuthorNotified: !!this.quiz?.isTrainerNotifiedOfNewTests,
+       }
+      });
         this.isAnswerSubmitted = true;
       },
       error: (error) => {

@@ -38,7 +38,6 @@ public class Quiz {
 		}
 		this.isPublished = false;
 		this.moderatedBy = null;
-		this.replaces = other;
 		this.title = other.title;
 	}
 

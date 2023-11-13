@@ -126,6 +126,15 @@ public class QuizController {
 		quiz.setTitle(title);
 	}
 
+	@PostMapping(path = "/{quiz-id}/duplicate")
+	@PreAuthorize("hasAuthority('trainer')")
+	@Transactional(readOnly = false)
+	public ResponseEntity<Void> createCopy(@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz, Authentication auth) {
+		final var draft = new Quiz(quiz, auth.getName());
+		final var created = quizRepo.save(draft);
+		return ResponseEntity.created(URI.create("%d".formatted(created.getId()))).build();
+	}
+
 	@PostMapping(path = "/{quiz-id}/draft")
 	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
@@ -137,6 +146,7 @@ public class QuizController {
 			throw new DraftAlreadyExistsException(quiz.getId());
 		}
 		final var draft = new Quiz(quiz, auth.getName());
+		draft.setReplaces(quiz);
 		final var created = quizRepo.save(draft);
 		quiz.setDraft(created);
 		quizRepo.save(quiz);
@@ -231,12 +241,17 @@ public class QuizController {
 	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
 	@Operation(responses = { @ApiResponse(headers = @Header(name = HttpHeaders.LOCATION, description = "ID of the created question")) })
-	public
-			ResponseEntity<Void>
-			addQuestion(@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz, @RequestBody @Valid QuestionUpdateDto dto) {
-		if (quiz.getIsPublished() || quiz.getReplacedBy() != null) {
+	public ResponseEntity<Void> addQuestion(
+			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
+			@RequestBody @Valid QuestionUpdateDto dto,
+			QuizAuthentication auth) {
+		if (quiz.getReplacedBy() != null) {
 			throw new NotADraftException(quiz.getId());
 		}
+		if (quiz.getIsPublished() && !auth.isModerator()) {
+			throw new NotADraftException(quiz.getId());
+		}
+
 		final var question = new Question(dto.label(), quiz.getQuestions().size(), dto.comment());
 		quiz.add(question);
 		final var created = questionRepo.save(question);
@@ -249,6 +264,10 @@ public class QuizController {
 	public ResponseEntity<Void> updateQuestionsOrder(
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
 			@RequestBody @NotEmpty List<Long> questionIds) {
+		if (quiz.getReplacedBy() != null) {
+			throw new NotADraftException(quiz.getId());
+		}
+
 		if (quiz.getQuestions().size() != questionIds.size()) {
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
 		}
@@ -264,15 +283,20 @@ public class QuizController {
 	}
 
 	@PutMapping(path = "/{quiz-id}/questions/{question-id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name && !#quiz.isPublished")
+	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
 	public ResponseEntity<Void> updateQuestion(
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("question-id") Long questionId,
-			@RequestBody @Valid QuestionUpdateDto dto) {
-		if (quiz.getIsPublished() || quiz.getReplacedBy() != null) {
+			@RequestBody @Valid QuestionUpdateDto dto,
+			QuizAuthentication auth) {
+		if (quiz.getReplacedBy() != null) {
 			throw new NotADraftException(quiz.getId());
 		}
+		if (quiz.getIsPublished() && !auth.isModerator()) {
+			throw new NotADraftException(quiz.getId());
+		}
+
 		final var question = quiz.getQuestion(questionId);
 		if (question == null) {
 			return ResponseEntity.notFound().build();
@@ -288,7 +312,12 @@ public class QuizController {
 	@Transactional(readOnly = false)
 	public ResponseEntity<Void> deleteQuestion(
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
-			@Parameter(schema = @Schema(type = "integer")) @PathVariable("question-id") Long questionId) {
+			@Parameter(schema = @Schema(type = "integer")) @PathVariable("question-id") Long questionId,
+			QuizAuthentication auth) {
+		if (quiz.getReplacedBy() != null) {
+			throw new NotADraftException(quiz.getId());
+		}
+
 		final var question = quiz.getQuestion(questionId);
 		if (question == null) {
 			return ResponseEntity.notFound().build();
@@ -311,15 +340,20 @@ public class QuizController {
 	}
 
 	@PostMapping(path = "/{quiz-id}/questions/{question-id}/choices", consumes = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name && !#quiz.isPublished")
+	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
 	public ResponseEntity<Void> addChoice(
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("question-id") Long questionId,
-			@RequestBody @Valid ChoiceUpdateDto dto) {
-		if (quiz.getIsPublished() || quiz.getReplacedBy() != null) {
+			@RequestBody @Valid ChoiceUpdateDto dto,
+			QuizAuthentication auth) {
+		if (quiz.getReplacedBy() != null) {
 			throw new NotADraftException(quiz.getId());
 		}
+		if (quiz.getIsPublished() && !auth.isModerator()) {
+			throw new NotADraftException(quiz.getId());
+		}
+
 		final var question = quiz.getQuestion(questionId);
 		if (question == null) {
 			return ResponseEntity.notFound().build();
@@ -337,7 +371,15 @@ public class QuizController {
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("question-id") Long questionId,
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("choice-id") Long choiceId,
-			@RequestBody @Valid ChoiceUpdateDto dto) {
+			@RequestBody @Valid ChoiceUpdateDto dto,
+			QuizAuthentication auth) {
+		if (quiz.getReplacedBy() != null) {
+			throw new NotADraftException(quiz.getId());
+		}
+		if (quiz.getIsPublished() && !auth.isModerator()) {
+			throw new NotADraftException(quiz.getId());
+		}
+
 		final var question = quiz.getQuestion(questionId);
 		if (question == null) {
 			return ResponseEntity.notFound().build();
@@ -361,7 +403,12 @@ public class QuizController {
 	public ResponseEntity<Void> deleteChoice(
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("question-id") Long questionId,
-			@Parameter(schema = @Schema(type = "integer")) @PathVariable("choice-id") Long choiceId) {
+			@Parameter(schema = @Schema(type = "integer")) @PathVariable("choice-id") Long choiceId,
+			QuizAuthentication auth) {
+		if (quiz.getReplacedBy() != null) {
+			throw new NotADraftException(quiz.getId());
+		}
+
 		final var question = quiz.getQuestion(questionId);
 		if (question == null) {
 			return ResponseEntity.notFound().build();
