@@ -176,12 +176,12 @@ class QuizApiApplicationTest {
 			worstPossibleAnswer.questions().add(questionWorstAnswer);
 		}
 
-		api.put(worstPossibleAnswer, "/skill-tests").andExpect(status().isOk()).andExpect(jsonPath("$.score", is(-50.0)));
+		api.put(worstPossibleAnswer, "/skill-tests").andExpect(status().isAccepted()).andExpect(jsonPath("$.score", is(-50.0)));
 		when(keycloakAdminApi.getUser("tonton-pirate", true)).thenReturn(List.of(new UserRepresentation(Map.of("email", "tonton-pirate@c4-soft.com"))));
 		api.perform(get("/skill-tests/{quizId}/{traineeName}", quizId.toString(), "tonton-pirate")).andExpect(status().isOk())
 				.andExpect(jsonPath("$.score", is(-50.0)));
 
-		api.put(perfectAnswer, "/skill-tests").andExpect(status().isOk()).andExpect(jsonPath("$.score", is(100.0)));
+		api.put(perfectAnswer, "/skill-tests").andExpect(status().isAccepted()).andExpect(jsonPath("$.score", is(100.0)));
 		api.perform(get("/skill-tests/{quizId}/{traineeName}", quizId.toString(), "tonton-pirate")).andExpect(status().isOk())
 				.andExpect(jsonPath("$.score", is(100.0)));
 
