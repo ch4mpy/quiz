@@ -19,11 +19,13 @@ import { ErrorDialog } from './error.dialog';
           mode="indeterminate"
         ></mat-progress-bar>
       </div>
-      <h2>{{ skillTest?.traineeUsername }}: {{ skillTest?.score }}</h2>
+      <h2>
+        <span>{{ skillTest?.traineeUsername }}</span>
+        <span>: {{ skillTest?.score }}</span></h2>
       <h3>{{ skillTest?.traineeFirstName }} {{ skillTest?.traineeLastName }} <a [href]="email" target="_blank">{{ skillTest?.traineeEmail }}</a></h3>
       <div *ngFor="let question of quiz?.questions" style="margin-bottom: 1em;">
         <div>
-          <div>{{ question.label }}</div>
+          <h2>{{ question.label }}</h2>
           <div *ngFor="let choice of question.choices" style="display: block;">
             <mat-checkbox style="margin-left: 2em;"
               [checked]="isChoiceSelected(question.questionId, choice.choiceId)"
@@ -49,6 +51,9 @@ import { ErrorDialog } from './error.dialog';
               color="warn"
               >close</mat-icon
             >
+          </div>
+          <div>
+            <p>{{ question.comment }}</p>
           </div>
         </div>
       </div>

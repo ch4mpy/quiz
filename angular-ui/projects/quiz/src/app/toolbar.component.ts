@@ -34,7 +34,7 @@ import { Router } from '@angular/router';
   <button mat-menu-item [routerLink]="['/', 'quizzes']">Quizzes</button>
   <button mat-menu-item *ngIf="currentUser.isTrainer" [routerLink]="['/', 'tests']">Trainees tests</button>
   <button mat-menu-item [routerLink]="['/', 'privacy']">Privacy Policy</button>
-  <a mat-menu-item href="https://oidc.c4-soft.com/auth/realms/quiz/account/">account</a>
+  <a mat-menu-item *ngIf="currentUser.isAuthenticated" href="https://oidc.c4-soft.com/auth/realms/quiz/account/">Account</a>
 </mat-menu>`,
   styles: [
   ]

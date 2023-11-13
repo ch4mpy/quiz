@@ -1,7 +1,8 @@
 scheme: http
-keycloak-host: https://oidc.c4-soft.com
+keycloak-host: https://oidc.c4-soft.com/auth
 keycloak-realm: quiz
-oauth2-issuer: ${keycloak-host}/auth/realms/${keycloak-realm}
+oauth2-issuer: ${keycloak-host}/realms/${keycloak-realm}
+oauth2-api-secret: change-me
 ui-external-uri: ${scheme}://localhost:8080/ui
 
 server:
@@ -33,8 +34,8 @@ spring:
     openfeign:
       client:
         config:
-          keycloak-admin-api:
-            url: ${keycloak-host}/auth/admin/realms/${keycloak-realm}
+          quiz-admin:
+            url: ${keycloak-host}/admin/realms/${keycloak-realm}
       oauth2:
         enabled: true
         clientRegistrationId: quiz-admin
@@ -59,7 +60,7 @@ spring:
           quiz-admin:
             provider: keycloak
             client-id: quiz-admin
-            client-secret: change-me
+            client-secret: ${oauth2-api-secret}
             authorization-grant-type: client_credentials
             scope:
             - openid

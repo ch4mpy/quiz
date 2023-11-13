@@ -520,10 +520,15 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
 
   submitAnswer() {
     this.isLoading = true;
-    this.skillTestApi.submitSkillTest(this.skillTest).subscribe({
-      next: (skillTest) => {
+    this.skillTestApi.submitSkillTest(this.skillTest, 'response').subscribe({
+      next: (response) => {
         this.isLoading = false;
-        this.dialog.open(SkillTestResultDialog, { data: skillTest });
+        this.dialog.open(SkillTestResultDialog, { data: {
+          dto: response.body,
+          testUri: response.headers.get('Location'),
+          isAuthorNotified: !!this.quiz?.isTrainerNotifiedOfNewTests,
+       }
+      });
         this.isAnswerSubmitted = true;
       },
       error: (error) => {
