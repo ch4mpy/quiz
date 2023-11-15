@@ -1,7 +1,7 @@
 scheme: http
-keycloak-host: https://oidc.c4-soft.com
+keycloak-host: https://oidc.c4-soft.com/auth
 keycloak-realm: quiz
-oauth2-issuer: ${keycloak-host}/auth/realms/${keycloak-realm}
+oauth2-issuer: ${keycloak-host}/realms/${keycloak-realm}
 oauth2-secret: change-me
 
 gateway-uri: ${scheme}://localhost:${server.port}
