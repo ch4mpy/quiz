@@ -2,9 +2,9 @@
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target": {
     "namespace": "android_app",
-    "package_name": "com.c4_soft.spring_addons.bff",
+    "package_name": "com.c4_soft.quiz.flutter_ui",
     "sha256_cert_fingerprints":
-    ["E1:E6:6E:88:27:1A:D4:B7:4A:CC:13:FD:19:1D:D7:7E:4F:42:05:0D:E6:B3:55:D8:1E:A2:B6:29:59:50:09:B4"]
+    ["51:10:25:D7:A6:D4:34:48:90:81:E3:4E:24:B1:CA:96:D5:5F:E4:0A:08:14:24:FE:F2:12:16:35:F7:92:BF:B5"]
   }
 },
 {
@@ -18,8 +18,8 @@
   "relation": ["delegate_permission/common.get_login_creds"],
   "target": {
     "namespace": "android_app",
-    "package_name": "com.c4_soft.spring_addons.bff",
+    "package_name": "com.c4_soft.quiz.flutter_ui",
     "sha256_cert_fingerprints":
-    ["E1:E6:6E:88:27:1A:D4:B7:4A:CC:13:FD:19:1D:D7:7E:4F:42:05:0D:E6:B3:55:D8:1E:A2:B6:29:59:50:09:B4"]
+    ["51:10:25:D7:A6:D4:34:48:90:81:E3:4E:24:B1:CA:96:D5:5F:E4:0A:08:14:24:FE:F2:12:16:35:F7:92:BF:B5"]
   }
 }]
