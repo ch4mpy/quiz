@@ -11,6 +11,8 @@ import org.springframework.security.oauth2.client.registration.ReactiveClientReg
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.c4_soft.springaddons.security.oidc.starter.properties.SpringAddonsOidcProperties;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
@@ -23,9 +25,10 @@ public class BffController {
 
 	public BffController(
 			OAuth2ClientProperties clientProps,
+			SpringAddonsOidcProperties addonsProperties,
 			ReactiveClientRegistrationRepository clientRegistrationRepository) {
 		this.loginOptions = clientProps.getRegistration().entrySet().stream().filter(e -> "authorization_code".equals(e.getValue().getAuthorizationGrantType()))
-				.map(e -> new LoginOptionDto(e.getValue().getProvider(), "/oauth2/authorization/%s".formatted(e.getKey())))
+				.map(e -> new LoginOptionDto(e.getValue().getProvider(), "%s/oauth2/authorization/%s".formatted(addonsProperties.getClient().getClientUri(), e.getKey())))
 				.toList();
 	}
 
