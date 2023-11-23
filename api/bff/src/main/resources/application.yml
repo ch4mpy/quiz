@@ -103,6 +103,8 @@ com:
           csrf: cookie-accessible-from-js
           post-login-redirect-path: /ui/
           post-logout-redirect-path: /ui/
+          oauth2-redirections:
+            rp-initiated-logout: ACCEPTED
         # OAuth2 resource server configuration
         resourceserver:
           permit-all:
