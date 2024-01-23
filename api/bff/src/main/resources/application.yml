@@ -6,7 +6,7 @@ oauth2-secret: change-me
 
 gateway-uri: ${scheme}://localhost:${server.port}
 quiz-api-uri: ${scheme}://localhost:7084
-ui-host: ${scheme}://localhost:4200
+ui-host: http://localhost:4200
 
 server:
   port: 8080
