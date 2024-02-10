@@ -2,7 +2,6 @@ scheme: http
 keycloak-host: https://oidc.c4-soft.com/auth
 keycloak-realm: quiz
 oauth2-issuer: ${keycloak-host}/realms/${keycloak-realm}
-oauth2-api-secret: change-me
 ui-external-uri: ${scheme}://localhost:8080/ui
 
 server:
@@ -60,7 +59,7 @@ spring:
           quiz-admin:
             provider: keycloak
             client-id: quiz-admin
-            client-secret: ${oauth2-api-secret}
+            client-secret: change-me
             authorization-grant-type: client_credentials
             scope:
             - openid
