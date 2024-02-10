@@ -6,5 +6,6 @@
         "moderator"
   	]
   },
-  "scope": "openid email"
+  "scope": "openid email",
+  "iss": "https://oidc.c4-soft.com/auth/realms/quiz"
 }
