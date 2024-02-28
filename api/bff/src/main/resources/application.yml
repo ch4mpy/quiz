@@ -104,6 +104,7 @@ com:
           post-logout-redirect-path: /ui/
           oauth2-redirections:
             rp-initiated-logout: ACCEPTED
+          pkce-forced: true
         # OAuth2 resource server configuration
         resourceserver:
           permit-all:
