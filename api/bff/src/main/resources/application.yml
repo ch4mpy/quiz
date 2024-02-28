@@ -2,11 +2,10 @@ scheme: http
 keycloak-host: https://oidc.c4-soft.com/auth
 keycloak-realm: quiz
 oauth2-issuer: ${keycloak-host}/realms/${keycloak-realm}
-oauth2-secret: change-me
 
 gateway-uri: ${scheme}://localhost:${server.port}
 quiz-api-uri: ${scheme}://localhost:7084
-ui-host: ${scheme}://localhost:4200
+ui-host: https://localhost:4200
 
 server:
   port: 8080
@@ -32,7 +31,7 @@ spring:
           quiz-bff:
             provider: keycloak
             client-id: quiz-bff
-            client-secret: ${oauth2-secret}
+            client-secret: change-me
             authorization-grant-type: authorization_code
             scope:
             - openid
@@ -105,6 +104,7 @@ com:
           post-logout-redirect-path: /ui/
           oauth2-redirections:
             rp-initiated-logout: ACCEPTED
+          pkce-forced: true
         # OAuth2 resource server configuration
         resourceserver:
           permit-all:
