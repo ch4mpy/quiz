@@ -13,6 +13,7 @@ index.ts
 model/choiceDto.ts
 model/choiceUpdateDto.ts
 model/models.ts
+model/problemDetail.ts
 model/questionDto.ts
 model/questionUpdateDto.ts
 model/quizDto.ts
@@ -23,5 +24,6 @@ model/skillTestQuestionDto.ts
 model/skillTestResultDetailsDto.ts
 model/skillTestResultPreviewDto.ts
 model/userInfoDto.ts
+model/validationProblemDetail.ts
 param.ts
 variables.ts

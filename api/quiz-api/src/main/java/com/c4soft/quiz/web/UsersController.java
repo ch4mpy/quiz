@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Users")
 public class UsersController {
 
-	@GetMapping(path = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/me", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_PROBLEM_JSON_VALUE })
 	public UserInfoDto getMe(Authentication auth) {
 		if (auth instanceof QuizAuthentication quizAuth) {
 			return new UserInfoDto(

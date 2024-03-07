@@ -25,7 +25,6 @@ import {
 } from '@angular/material-moment-adapter';
 import {
   Configuration as BffApiConfiguration,
-  ConfigurationParameters as BffApiConfigurationParameters,
   ApiModule as BffApiModule,
 } from '@c4-soft/bff-api';
 
@@ -41,12 +40,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import {
   Configuration as QuizApiConfiguration,
-  ConfigurationParameters as QuizApiConfigurationParameters,
   ApiModule as QuizApiModule,
 } from '@c4-soft/quiz-api';
 import { ChoiceItemComponent } from './choice-item.component';
 import { ConfirmationDialog } from './confirmation.dialog';
 import { ErrorDialog } from './error.dialog';
+import { PrivacyPolicyPage } from './privacy-policy.page';
 import { QuestionCreationDialog } from './question-creation.dialog';
 import { QuestionExpansionPannelComponent } from './question-expansion-pannel.component';
 import { QuizCreationDialog } from './quiz-creation.dialog';
@@ -54,23 +53,24 @@ import { QuizDetailsPage } from './quiz-details.page';
 import { QuizRejectionDialog } from './quiz-rejection.dialog';
 import { QuizSelectionPage } from './quiz-selection.page';
 import { SkillTestDetailsPage } from './skill-test-details.page';
+import { SkillTestResultDialog } from './skill-test-result.dialog';
 import { SkillTestSelectionPage } from './skill-test-selection.page';
 import { ToolbarComponent } from './toolbar.component';
-import { SkillTestResultDialog } from './skill-test-result.dialog';
-import { PrivacyPolicyPage } from './privacy-policy.page';
 
 export function bffApiConfigFactory(): BffApiConfiguration {
-  const params: BffApiConfigurationParameters = {
+  const config = new BffApiConfiguration({
     basePath: '',
-  };
-  return new BffApiConfiguration(params);
+  });
+  config.selectHeaderAccept(['application/json']);
+  return config;
 }
 
 export function quizApiConfigFactory(): QuizApiConfiguration {
-  const params: QuizApiConfigurationParameters = {
+  const config = new QuizApiConfiguration({
     basePath: '/bff/v1',
-  };
-  return new QuizApiConfiguration(params);
+  });
+  config.selectHeaderAccept(['application/json']);
+  return config;
 }
 
 @NgModule({

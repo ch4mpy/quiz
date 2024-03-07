@@ -84,7 +84,7 @@ public class QuizController {
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasAuthority('trainer')")
 	@Transactional(readOnly = false)
-	@Operation(responses = { @ApiResponse(headers = @Header(name = HttpHeaders.LOCATION, description = "ID of the created quiz")) })
+	@Operation(responses = { @ApiResponse(responseCode = "201", headers = @Header(name = HttpHeaders.LOCATION, description = "ID of the created quiz")) })
 	public ResponseEntity<Void> createQuiz(@RequestBody @Valid QuizUpdateDto dto, QuizAuthentication auth) {
 		final var quiz = new Quiz(dto.title(), auth.getName());
 		final var created = quizRepo.save(quiz);
@@ -100,6 +100,7 @@ public class QuizController {
 	@PutMapping(path = "/{quiz-id}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
+	@Operation(responses = { @ApiResponse(responseCode = "202") })
 	public ResponseEntity<Void> updateQuiz(
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
 			@RequestBody @Valid QuizUpdateDto dto,
@@ -129,6 +130,7 @@ public class QuizController {
 	@PostMapping(path = "/{quiz-id}/duplicate")
 	@PreAuthorize("hasAuthority('trainer')")
 	@Transactional(readOnly = false)
+	@Operation(responses = { @ApiResponse(responseCode = "201", headers = @Header(name = HttpHeaders.LOCATION, description = "ID of the created quiz")) })
 	public ResponseEntity<Void> createCopy(@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz, Authentication auth) {
 		final var draft = new Quiz(quiz, auth.getName());
 		final var created = quizRepo.save(draft);
@@ -138,6 +140,7 @@ public class QuizController {
 	@PostMapping(path = "/{quiz-id}/draft")
 	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
+	@Operation(responses = { @ApiResponse(responseCode = "201", headers = @Header(name = HttpHeaders.LOCATION, description = "ID of the created quiz")) })
 	public ResponseEntity<Void> createDraft(@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz, Authentication auth) {
 		if (quiz.getDraft() != null) {
 			throw new DraftAlreadyExistsException(quiz.getId());
@@ -156,6 +159,7 @@ public class QuizController {
 	@PutMapping(path = "/{quiz-id}/submit")
 	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
+	@Operation(responses = { @ApiResponse(responseCode = "202") })
 	public ResponseEntity<Void> submitDraft(@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz, QuizAuthentication auth) {
 		if (auth.isModerator()) {
 			return publishDraft(quiz, auth);
@@ -168,6 +172,7 @@ public class QuizController {
 	@PutMapping(path = "/{quiz-id}/publish")
 	@PreAuthorize("hasAuthority('moderator')")
 	@Transactional(readOnly = false)
+	@Operation(responses = { @ApiResponse(responseCode = "202") })
 	public ResponseEntity<Void> publishDraft(@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz, Authentication auth) {
 		quiz.setIsSubmitted(false);
 		quiz.setIsPublished(true);
@@ -188,9 +193,11 @@ public class QuizController {
 	@PutMapping(path = "/{quiz-id}/reject", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasAuthority('moderator')")
 	@Transactional(readOnly = false)
-	public
-			ResponseEntity<Void>
-			rejectDraft(@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz, @Valid QuizRejectionDto dto, Authentication auth) {
+	@Operation(responses = { @ApiResponse(responseCode = "202") })
+	public ResponseEntity<Void> rejectDraft(
+			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
+			@Valid QuizRejectionDto dto,
+			Authentication auth) {
 		quiz.setIsSubmitted(false);
 		quiz.setIsPublished(false);
 		quiz.setModeratorComment(dto.message());
@@ -202,6 +209,7 @@ public class QuizController {
 	@DeleteMapping(path = "/{quiz-id}")
 	@PreAuthorize("hasAuthority('moderator') || (hasAuthority('trainer') && #quiz.authorName == authentication.name)")
 	@Transactional(readOnly = false)
+	@Operation(responses = { @ApiResponse(responseCode = "202") })
 	public ResponseEntity<Void> deleteQuiz(@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz) {
 		final var draft = quiz.getDraft();
 		if (draft != null) {
@@ -240,7 +248,7 @@ public class QuizController {
 	@PostMapping(path = "/{quiz-id}/questions", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
-	@Operation(responses = { @ApiResponse(headers = @Header(name = HttpHeaders.LOCATION, description = "ID of the created question")) })
+	@Operation(responses = { @ApiResponse(responseCode = "201", headers = @Header(name = HttpHeaders.LOCATION, description = "ID of the created question")) })
 	public ResponseEntity<Void> addQuestion(
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
 			@RequestBody @Valid QuestionUpdateDto dto,
@@ -261,6 +269,7 @@ public class QuizController {
 	@PutMapping(path = "/{quiz-id}/questions", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
+	@Operation(responses = { @ApiResponse(responseCode = "202") })
 	public ResponseEntity<Void> updateQuestionsOrder(
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
 			@RequestBody @NotEmpty List<Long> questionIds) {
@@ -285,6 +294,7 @@ public class QuizController {
 	@PutMapping(path = "/{quiz-id}/questions/{question-id}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
+	@Operation(responses = { @ApiResponse(responseCode = "202") })
 	public ResponseEntity<Void> updateQuestion(
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("question-id") Long questionId,
@@ -310,6 +320,7 @@ public class QuizController {
 	@DeleteMapping(path = "/{quiz-id}/questions/{question-id}")
 	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
+	@Operation(responses = { @ApiResponse(responseCode = "202") })
 	public ResponseEntity<Void> deleteQuestion(
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("question-id") Long questionId,
@@ -342,6 +353,7 @@ public class QuizController {
 	@PostMapping(path = "/{quiz-id}/questions/{question-id}/choices", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
+	@Operation(responses = { @ApiResponse(responseCode = "201", headers = @Header(name = HttpHeaders.LOCATION, description = "ID of the created choice")) })
 	public ResponseEntity<Void> addChoice(
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("question-id") Long questionId,
@@ -367,6 +379,7 @@ public class QuizController {
 	@PutMapping(path = "/{quiz-id}/questions/{question-id}/choices/{choice-id}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
+	@Operation(responses = { @ApiResponse(responseCode = "202") })
 	public ResponseEntity<Void> updateChoice(
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("question-id") Long questionId,
@@ -400,6 +413,7 @@ public class QuizController {
 	@DeleteMapping(path = "/{quiz-id}/questions/{question-id}/choices/{choice-id}")
 	@PreAuthorize("hasAuthority('trainer') && #quiz.authorName == authentication.name")
 	@Transactional(readOnly = false)
+	@Operation(responses = { @ApiResponse(responseCode = "202") })
 	public ResponseEntity<Void> deleteChoice(
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("quiz-id") Quiz quiz,
 			@Parameter(schema = @Schema(type = "integer")) @PathVariable("question-id") Long questionId,
