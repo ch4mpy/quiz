@@ -2,6 +2,7 @@ scheme: http
 keycloak-host: https://oidc.c4-soft.com/auth
 keycloak-realm: quiz
 oauth2-issuer: ${keycloak-host}/realms/${keycloak-realm}
+oauth2-secret: change-me
 
 gateway-uri: ${scheme}://localhost:${server.port}
 quiz-api-uri: ${scheme}://localhost:7084
@@ -31,7 +32,7 @@ spring:
           quiz-bff:
             provider: keycloak
             client-id: quiz-bff
-            client-secret: change-me
+            client-secret: ${oauth2-secret}
             authorization-grant-type: authorization_code
             scope:
             - openid

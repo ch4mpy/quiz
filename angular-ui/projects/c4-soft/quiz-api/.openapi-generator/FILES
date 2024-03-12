@@ -24,6 +24,5 @@ model/skillTestQuestionDto.ts
 model/skillTestResultDetailsDto.ts
 model/skillTestResultPreviewDto.ts
 model/userInfoDto.ts
-model/validationProblemDetail.ts
 param.ts
 variables.ts
