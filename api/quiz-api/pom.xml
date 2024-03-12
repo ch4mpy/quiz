@@ -160,6 +160,10 @@
 					<groupId>org.springdoc</groupId>
 					<artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
 				</dependency>
+				<dependency>
+					<groupId>com.c4-soft.springaddons</groupId>
+					<artifactId>spring-addons-starter-openapi</artifactId>
+				</dependency>
 			</dependencies>
 			<build>
 				<plugins>
