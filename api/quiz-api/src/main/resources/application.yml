@@ -30,10 +30,6 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: false
-    defer-datasource-initialization: true
-  sql:
-    init:
-      mode: always
   cloud:
     openfeign:
       client:
@@ -122,9 +118,6 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: create-drop
-  sql:
-    init:
-      mode: never
 
 ---
 server:
