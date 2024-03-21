@@ -1,0 +1,210 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+                        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd"
+    logicalFilePath="db/changelog/db-changelog-master.xml">
+    <!-- INIT -->
+    <changeSet author="ch4mpy" id="init-1" context="init">
+        <createTable tableName="quiz">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="quiz_pkey" />
+            </column>
+            <column name="author_name" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="true" name="is_choices_shuffled" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="true" name="is_per_question_result" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="false" name="is_published" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="true" name="is_replay_enabled" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="false" name="is_submitted" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="false" name="is_trainer_notified_of_new_tests"
+                type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+            <column name="moderated_by" type="VARCHAR(255)" />
+            <column name="moderator_comment" type="VARCHAR(255)" />
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="draft_id" type="BIGINT" />
+            <column name="replaced_by_id" type="BIGINT" />
+            <column name="replaces_id" type="BIGINT" />
+        </createTable>
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-2" context="init">
+        <createTable tableName="quiz_skill_tests">
+            <column name="quiz_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="skill_tests_quiz_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="skill_tests_trainee_name" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-3" context="init">
+        <addUniqueConstraint columnNames="replaced_by_id"
+            constraintName="uk_c3giyfjx14o0r040dus4fxr01" tableName="quiz" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-4" context="init">
+        <addUniqueConstraint columnNames="draft_id" constraintName="uk_fvl8i29newwhr9jvd8ikxhk0i"
+            tableName="quiz" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-5" context="init">
+        <addUniqueConstraint columnNames="replaces_id" constraintName="uk_lq3b8pvf33jm4fq2cr77kdah1"
+            tableName="quiz" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-6" context="init">
+        <addUniqueConstraint columnNames="skill_tests_quiz_id, skill_tests_trainee_name"
+            constraintName="uk_rm4c0bev4b69qfena0jwrmk8y" tableName="quiz_skill_tests" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-7" context="init">
+        <createSequence cacheSize="1" cycle="false" dataType="bigint" incrementBy="50"
+            maxValue="9223372036854775807" minValue="1" sequenceName="choice_seq" startValue="1" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-8" context="init">
+        <createSequence cacheSize="1" cycle="false" dataType="bigint" incrementBy="50"
+            maxValue="9223372036854775807" minValue="1" sequenceName="question_seq" startValue="1" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-9" context="init">
+        <createSequence cacheSize="1" cycle="false" dataType="bigint" incrementBy="50"
+            maxValue="9223372036854775807" minValue="1" sequenceName="quiz_seq" startValue="1" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-10" context="init">
+        <createTable tableName="choice">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="choice_pkey" />
+            </column>
+            <column name="is_good" type="BOOLEAN" />
+            <column name="label" type="VARCHAR(255)" />
+            <column name="question_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-11" context="init">
+        <createTable tableName="question">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="question_pkey" />
+            </column>
+            <column name="comment" type="VARCHAR(2048)" />
+            <column name="formatted_body" type="VARCHAR(255)" />
+            <column name="label" type="VARCHAR(255)" />
+            <column name="priority" type="INTEGER">
+                <constraints nullable="false" />
+            </column>
+            <column name="quiz_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-12" context="init">
+        <createTable tableName="skill_test">
+            <column name="quiz_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="skill_test_pkey" />
+            </column>
+            <column name="trainee_name" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="skill_test_pkey" />
+            </column>
+            <column name="submitted_on" type="BIGINT" />
+        </createTable>
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-13" context="init">
+        <createTable tableName="skill_test_choices">
+            <column name="skill_test_quiz_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="skill_test_trainee_name" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="choices_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-14" context="init">
+        <addForeignKeyConstraint baseColumnNames="replaces_id" baseTableName="quiz"
+            constraintName="fk1a9ofmpkpxe0grsno9lsvniq3" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="quiz" validate="true" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-15" context="init">
+        <addForeignKeyConstraint baseColumnNames="choices_id" baseTableName="skill_test_choices"
+            constraintName="fk57lqfp8gi1suuch5h65r0wuxo" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="choice" validate="true" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-16" context="init">
+        <addForeignKeyConstraint baseColumnNames="replaced_by_id" baseTableName="quiz"
+            constraintName="fk7qshmcdwkofdd4auc7bt4k6fd" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="quiz" validate="true" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-17" context="init">
+        <addForeignKeyConstraint baseColumnNames="quiz_id" baseTableName="question"
+            constraintName="fkb0yh0c1qaxfwlcnwo9dms2txf" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="quiz" validate="true" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-18" context="init">
+        <addForeignKeyConstraint baseColumnNames="question_id" baseTableName="choice"
+            constraintName="fkcaq6r76cswke5b9fk6fyx3y5w" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="question" validate="true" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-19" context="init">
+        <addForeignKeyConstraint baseColumnNames="skill_test_quiz_id,skill_test_trainee_name"
+            baseTableName="skill_test_choices" constraintName="fkdcgd4aib37486v4pv541drdww"
+            deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="quiz_id,trainee_name" referencedTableName="skill_test"
+            validate="true" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-20" context="init">
+        <addForeignKeyConstraint baseColumnNames="skill_tests_quiz_id,skill_tests_trainee_name"
+            baseTableName="quiz_skill_tests" constraintName="fkiyg4mp0vi47kbdx6jx3cw5ow1"
+            deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="quiz_id,trainee_name" referencedTableName="skill_test"
+            validate="true" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-21" context="init">
+        <addForeignKeyConstraint baseColumnNames="draft_id" baseTableName="quiz"
+            constraintName="fklxisdmbxbv669bfjbdkp8xush" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="quiz" validate="true" />
+    </changeSet>
+    <changeSet author="ch4mpy" id="init-22" context="init">
+        <addForeignKeyConstraint baseColumnNames="quiz_id" baseTableName="quiz_skill_tests"
+            constraintName="fktfhr5qj312utua4qar03uyiw7" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="quiz" validate="true" />
+    </changeSet>
+
+    <!-- End INIT -->
+
+    <!-- Increase question.formatted_body length -->
+    <changeSet author="ch4mpy" id="2024-03-21-1" context="default">
+        <modifyDataType tableName="question" columnName="formatted_body" newDataType="VARCHAR(2047)" />
+    </changeSet>
+    
+
+    <!-- Reduce question.comment length -->
+    <changeSet author="ch4mpy" id="2024-03-21-2" context="default">
+        <modifyDataType tableName="question" columnName="comment" newDataType="VARCHAR(2047)" />
+    </changeSet>
+</databaseChangeLog>

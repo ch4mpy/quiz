@@ -2,6 +2,7 @@ package com.c4soft.quiz.web.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  * @param title                       the new title for the quiz
@@ -12,7 +13,7 @@ import jakarta.validation.constraints.NotNull;
  * @param isTrainerNotifiedOfNewTests if true, trainers receive an email each time a new skill-test is submitted (for quizzes they authored only)
  */
 public record QuizUpdateDto(
-		@NotEmpty String title,
+		@NotEmpty @Size(max = 255) String title,
 		@NotNull Boolean isChoicesShuffled,
 		@NotNull Boolean isReplayEnabled,
 		@NotNull Boolean isPerQuestionResult,

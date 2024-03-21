@@ -30,6 +30,8 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: false
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
   cloud:
     openfeign:
       client:
@@ -115,9 +117,6 @@ spring:
     password: password
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-    generate-ddl: true
-    hibernate:
-      ddl-auto: create-drop
 
 ---
 server:
