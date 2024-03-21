@@ -20,23 +20,26 @@ export interface ChoiceEvent {
 
 @Component({
   selector: 'app-choice-item',
-  template: `<form [formGroup]="form" style="height: 4em;">
-      <mat-form-field style="width: 75%;">
-        <mat-label>Label</mat-label>
-        <input matInput formControlName="label" />
-      </mat-form-field>
-      <mat-checkbox formControlName="isGood"></mat-checkbox>
-      <mat-icon
-        *ngIf="(isValidated$ | async) && isCorrect && isPerQuestionResult"
-        color="primary"
-        >done</mat-icon
-      >
-      <mat-icon
-        *ngIf="(isValidated$ | async) && !isCorrect && isPerQuestionResult"
-        color="warn"
-        >close</mat-icon
-      >
-    </form>
+  template: `<div style="height: 4em; width: 100%; display: flex;">
+    <span style="width: 100%; margin-right: 4em;">
+      <form [formGroup]="form">
+        <mat-form-field style="width: 100%">
+          <mat-label>Label</mat-label>
+          <input matInput formControlName="label" />
+        </mat-form-field>
+        <mat-checkbox formControlName="isGood"></mat-checkbox>
+        <mat-icon
+          *ngIf="(isValidated$ | async) && isCorrect && isPerQuestionResult"
+          color="primary"
+          >done</mat-icon
+        >
+        <mat-icon
+          *ngIf="(isValidated$ | async) && !isCorrect && isPerQuestionResult"
+          color="warn"
+          >close</mat-icon
+        >
+      </form>
+    </span>
     <button
       *ngIf="isInEditMode$ | async"
       matListItemMeta
@@ -48,7 +51,9 @@ export interface ChoiceEvent {
       (click)="delete()"
     >
       <mat-icon>delete</mat-icon>
-    </button>`,
+    </button>
+    <span style="width: 8em;"></span>
+  </div>`,
   styles: [],
 })
 export class ChoiceItemComponent implements OnInit, OnDestroy {
