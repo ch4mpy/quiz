@@ -55,7 +55,7 @@ public class Question {
 	@Column
 	private String label;
 
-	@Column
+	@Column(length = 2047)
 	private String formattedBody;
 
 	@Column(nullable = false, updatable = true)

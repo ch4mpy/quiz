@@ -49,7 +49,7 @@ public class ExceptionHandlers {
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	@ApiResponse(responseCode = "422", content = { @Content(schema = @Schema(implementation = ProblemDetail.class)) })
 	public ResponseEntity<ProblemDetail> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-		final var detail = new ValidationProblemDetail(ex.getMessage(), Map.of());
+		final var detail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
 		return ResponseEntity.status(detail.getStatus()).body(detail);
 	}
 
