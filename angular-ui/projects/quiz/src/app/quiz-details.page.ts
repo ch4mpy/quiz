@@ -47,7 +47,7 @@ import { UserService } from './user.service';
           <mat-icon>rocket_launch</mat-icon>
         </button>
         <button
-          *ngIf="canPublish && !quiz?.isPublished && quiz?.isSubmitted"
+          *ngIf="canPublish && !quiz?.isPublished && (quiz?.isSubmitted || isModerator)"
           (click)="publishDraft()"
           mat-fab
           color="primary"
