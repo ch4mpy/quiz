@@ -56,6 +56,7 @@ import { SkillTestDetailsPage } from './skill-test-details.page';
 import { SkillTestResultDialog } from './skill-test-result.dialog';
 import { SkillTestSelectionPage } from './skill-test-selection.page';
 import { ToolbarComponent } from './toolbar.component';
+import { QuillModule } from 'ngx-quill';
 
 export function bffApiConfigFactory(): BffApiConfiguration {
   const config = new BffApiConfiguration({
@@ -116,6 +117,7 @@ export function quizApiConfigFactory(): QuizApiConfiguration {
     MatSelectModule,
     MatToolbarModule,
     MatTooltipModule,
+    QuillModule.forRoot(),
   ],
   providers: [
     provideRouter(routes, withComponentInputBinding()),

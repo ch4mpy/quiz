@@ -1,13 +1,22 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  SecurityContext,
+} from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
+import { DomSanitizer } from '@angular/platform-browser';
 import {
   ChoiceDto,
   QuestionDto,
   QuizzesApi,
   SkillTestDto,
 } from '@c4-soft/quiz-api';
+import { QuillModules } from 'ngx-quill';
 import { BehaviorSubject, Observable, debounceTime } from 'rxjs';
 import { ConfirmationDialog } from './confirmation.dialog';
 import { ErrorDialog } from './error.dialog';
@@ -38,13 +47,23 @@ import { ErrorDialog } from './error.dialog';
       >
     </mat-expansion-panel-header>
     <mat-form-field *ngIf="isInEditMode$ | async" style="width: 100%">
-      <mat-label>Question</mat-label>
+      <mat-label>Title</mat-label>
       <input
         matInput
         [formControl]="labelCtrl"
         style="display: block; width: 100%"
       />
     </mat-form-field>
+    <quill-editor
+      *ngIf="isInEditMode$ | async"
+      class="content-editor"
+      [modules]="quillConfig"
+      [formControl]="formattedBodyCtrl"
+      [placeholder]="''"
+      style="width: 100%"
+    >
+    </quill-editor>
+    <div *ngIf="!(isInEditMode$ | async)" [innerHTML]="question.formattedBody" style="width: 100%"></div>
     <mat-list #choices>
       <mat-list-item
         *ngFor="let choice of question.choices"
@@ -158,11 +177,30 @@ export class QuestionExpansionPannelComponent implements OnInit {
     Validators.required,
     Validators.minLength(1),
   ]);
+  formattedBodyCtrl = new FormControl<string>('', []);
   commentCtrl = new FormControl<string>('');
 
   questionAnswer = new Map<number, boolean>();
 
-  constructor(private quizApi: QuizzesApi, private dialog: MatDialog) {}
+  quillConfig: QuillModules = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+      ['code-block'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+      [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+      [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+      [{ 'align': [] }],
+      ['clean'],                                         // remove formatting button
+      ['link']                         // link and image, video
+    ]
+  }
+
+  constructor(
+    private quizApi: QuizzesApi,
+    private dialog: MatDialog,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngOnInit() {
     if (this.isChoicesShuffled) {
@@ -180,25 +218,38 @@ export class QuestionExpansionPannelComponent implements OnInit {
 
     this.commentCtrl.patchValue(this.question.comment);
     this.labelCtrl.patchValue(this.question.label || '');
+    this.formattedBodyCtrl.patchValue(
+      this.sanitizeHtml(this.question.formattedBody)
+    );
     this.commentCtrl.valueChanges
       .pipe(debounceTime(500))
       .subscribe(() => this.updateQuestion());
     this.labelCtrl.valueChanges
       .pipe(debounceTime(500))
       .subscribe(() => this.updateQuestion());
+    this.formattedBodyCtrl.valueChanges
+      .pipe(debounceTime(500))
+      .subscribe(() => this.updateQuestion());
+  }
+
+  sanitizeHtml(str?: string | null): string {
+    return this.sanitizer.sanitize(SecurityContext.HTML, str || '') || '';
   }
 
   private updateQuestion() {
     if (this.labelCtrl.valid && this.commentCtrl.valid) {
+      const sanitizedBody = this.sanitizeHtml(this.formattedBodyCtrl.value);
       this.quizApi
         .updateQuestion(this.question.quizId, this.question.questionId, {
           label: this.labelCtrl.value || '',
+          formattedBody: sanitizedBody,
           comment: this.commentCtrl.value || '',
         })
         .subscribe({
           next: () => {
             this.question.comment = this.commentCtrl.value || '';
             this.question.label = this.labelCtrl.value || '';
+            this.question.formattedBody = sanitizedBody;
           },
           error: (error) => {
             this.dialog.open(ErrorDialog, { data: { error } });

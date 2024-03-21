@@ -10,6 +10,16 @@
     "description": "Authorization server 'issuer' URI"
   },
   {
+    "name": "oauth2-client-id",
+    "type": "java.lang.String",
+    "description": "client-id used for client registration configuration and resource_access roles"
+  },
+  {
+    "name": "oauth2-client-secret",
+    "type": "java.lang.String",
+    "description": "client-secret used for client registration configuration"
+  },
+  {
     "name": "keycloak-host",
     "type": "java.lang.String",
     "description": "Scheme, hostname and port for Keycloak server"

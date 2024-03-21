@@ -81,8 +81,12 @@ class QuizApiApplicationTest {
 		assertEquals("OAuth2 and OpenID in web echosystem with Spring", ((JSONObject) actual.get(0)).get("title"));
 
 		// Create a draft from existing quiz
-		final var draftId = api.post(null, "/quizzes/{quiz-id}/draft", ((JSONObject) actual.get(0)).get("id")).andExpect(status().isCreated()).andReturn()
-				.getResponse().getHeader(HttpHeaders.LOCATION);
+		final var draftId = api
+				.post(null, "/quizzes/{quiz-id}/draft", ((JSONObject) actual.get(0)).get("id"))
+				.andExpect(status().isCreated())
+				.andReturn()
+				.getResponse()
+				.getHeader(HttpHeaders.LOCATION);
 		actual = parse(api.get("/quizzes").andExpect(status().isOk()).andReturn(), JSONArray.class);
 		assertEquals(2L, actual.size());
 
@@ -96,36 +100,62 @@ class QuizApiApplicationTest {
 		assertEquals(1L, actual.stream().filter(q -> (boolean) ((JSONObject) q).get("isPublished")).toList().size());
 
 		// Create a new quiz
-		final var quiz1Id = api.post(new QuizUpdateDto("Second Quiz", true, true, true, false), "/quizzes").andExpect(status().isCreated()).andReturn().getResponse()
+		final var quiz1Id = api
+				.post(new QuizUpdateDto("Second Quiz", true, true, true, false), "/quizzes")
+				.andExpect(status().isCreated())
+				.andReturn()
+				.getResponse()
 				.getHeader(HttpHeaders.LOCATION);
 		api.get("/quizzes?titleLike=second").andExpect(status().isOk()).andExpect(jsonPath("$.*.title", hasItems("Second Quiz")));
 
 		// Add 2 questions to the new quiz
-		final var question10Id = api.post(new QuestionUpdateDto("machin", "truc"), "/quizzes/{quiz-id}/questions", quiz1Id).andExpect(status().isCreated())
-				.andReturn().getResponse().getHeader(HttpHeaders.LOCATION);
-		final var question11Id = api.post(new QuestionUpdateDto("bidule", "chode"), "/quizzes/{quiz-id}/questions", quiz1Id).andExpect(status().isCreated())
-				.andReturn().getResponse().getHeader(HttpHeaders.LOCATION);
+		final var question10Id = api
+				.post(new QuestionUpdateDto("machin", "", "truc"), "/quizzes/{quiz-id}/questions", quiz1Id)
+				.andExpect(status().isCreated())
+				.andReturn()
+				.getResponse()
+				.getHeader(HttpHeaders.LOCATION);
+		final var question11Id = api
+				.post(new QuestionUpdateDto("bidule", "", "chode"), "/quizzes/{quiz-id}/questions", quiz1Id)
+				.andExpect(status().isCreated())
+				.andReturn()
+				.getResponse()
+				.getHeader(HttpHeaders.LOCATION);
 		api.get("/quizzes/{quiz-id}", quiz1Id).andExpect(status().isOk()).andExpect(jsonPath("$.questions.*.label", hasItems("machin", "bidule")));
 
 		// Reverse questions order
 		api.put(List.of(question11Id, question10Id), "/quizzes/{quiz-id}/questions", quiz1Id).andExpect(status().isAccepted());
 
 		// Update the 1st question title and comment
-		api.put(
-				new QuestionUpdateDto("What is the answer to machin?", "The answer is truc."),
-				"/quizzes/{quiz-id}/questions/{question-id}",
-				quiz1Id,
-				question10Id).andExpect(status().isAccepted());
-		api.get("/quizzes/{quiz-id}", quiz1Id).andExpect(status().isOk()).andExpect(jsonPath("$.questions[0].label", is("bidule")))
+		api
+				.put(
+						new QuestionUpdateDto("What is the answer to machin?", "", "The answer is truc."),
+						"/quizzes/{quiz-id}/questions/{question-id}",
+						quiz1Id,
+						question10Id)
+				.andExpect(status().isAccepted());
+		api
+				.get("/quizzes/{quiz-id}", quiz1Id)
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.questions[0].label", is("bidule")))
 				.andExpect(jsonPath("$.questions[1].label", is("What is the answer to machin?")));
 
 		// Add 2 choices
-		final var choice100Id = api.post(new ChoiceUpdateDto("truc", true), "/quizzes/{quiz-id}/questions/{question-id}/choices", quiz1Id, question10Id)
-				.andExpect(status().isCreated()).andReturn().getResponse().getHeader(HttpHeaders.LOCATION);
-		final var choice101Id = api.post(new ChoiceUpdateDto("chouette", false), "/quizzes/{quiz-id}/questions/{question-id}/choices", quiz1Id, question10Id)
-				.andExpect(status().isCreated()).andReturn().getResponse().getHeader(HttpHeaders.LOCATION);
+		final var choice100Id = api
+				.post(new ChoiceUpdateDto("truc", true), "/quizzes/{quiz-id}/questions/{question-id}/choices", quiz1Id, question10Id)
+				.andExpect(status().isCreated())
+				.andReturn()
+				.getResponse()
+				.getHeader(HttpHeaders.LOCATION);
+		final var choice101Id = api
+				.post(new ChoiceUpdateDto("chouette", false), "/quizzes/{quiz-id}/questions/{question-id}/choices", quiz1Id, question10Id)
+				.andExpect(status().isCreated())
+				.andReturn()
+				.getResponse()
+				.getHeader(HttpHeaders.LOCATION);
 		api.get("/quizzes/{quiz-id}", quiz1Id).andExpect(status().isOk()).andExpect(jsonPath("$.questions[1].choices.*.label", hasItems("truc", "chouette")));
-		api.put(new ChoiceUpdateDto("chose", true), "/quizzes/{quiz-id}/questions/{question-id}/choices/{choice-id}", quiz1Id, question10Id, choice101Id)
+		api
+				.put(new ChoiceUpdateDto("chose", true), "/quizzes/{quiz-id}/questions/{question-id}/choices/{choice-id}", quiz1Id, question10Id, choice101Id)
 				.andExpect(status().isAccepted());
 		api.get("/quizzes/{quiz-id}", quiz1Id).andExpect(status().isOk()).andExpect(jsonPath("$.questions[1].choices.*.label", hasItems("truc", "chose")));
 
@@ -178,11 +208,15 @@ class QuizApiApplicationTest {
 
 		api.put(worstPossibleAnswer, "/skill-tests").andExpect(status().isAccepted()).andExpect(jsonPath("$.score", is(-50.0)));
 		when(keycloakAdminApi.getUser("tonton-pirate", true)).thenReturn(List.of(new UserRepresentation(Map.of("email", "tonton-pirate@c4-soft.com"))));
-		api.perform(get("/skill-tests/{quizId}/{traineeName}", quizId.toString(), "tonton-pirate")).andExpect(status().isOk())
+		api
+				.perform(get("/skill-tests/{quizId}/{traineeName}", quizId.toString(), "tonton-pirate"))
+				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.score", is(-50.0)));
 
 		api.put(perfectAnswer, "/skill-tests").andExpect(status().isAccepted()).andExpect(jsonPath("$.score", is(100.0)));
-		api.perform(get("/skill-tests/{quizId}/{traineeName}", quizId.toString(), "tonton-pirate")).andExpect(status().isOk())
+		api
+				.perform(get("/skill-tests/{quizId}/{traineeName}", quizId.toString(), "tonton-pirate"))
+				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.score", is(100.0)));
 
 	}
@@ -199,8 +233,8 @@ class QuizApiApplicationTest {
 			final var quiz = new Quiz(
 					"OAuth2 and OpenID in web echosystem with Spring",
 					trainer1,
-					new Question("Question 1", 0, "Good is right", new Choice("good", true), new Choice("bad", false)),
-					new Question("Question 2", 1, "Bad is wrong", new Choice("bad", false), new Choice("good", true)));
+					new Question("Question 1", "", 0, "Good is right", new Choice("good", true), new Choice("bad", false)),
+					new Question("Question 2", "", 1, "Bad is wrong", new Choice("bad", false), new Choice("good", true)));
 			quiz.setModeratedBy(moderator1);
 			quiz.setIsPublished(true);
 			return quiz;

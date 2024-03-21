@@ -71,6 +71,7 @@ export class QuestionCreationDialog {
         this.data.quizId,
         {
           label: this.creationForm.controls.labelInput.value || '',
+          formattedBody: '',
           comment: this.creationForm.controls.commentInput.value || '',
         },
         'response'

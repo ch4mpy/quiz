@@ -28,8 +28,8 @@ import { UserService } from './user.service';
         ></mat-progress-bar>
       </div>
       <div style="width: 100%; display: flex;">
-        <div [formGroup]="titleForm">
-          <mat-form-field *ngIf="isInEditMode$ | async">
+        <div [formGroup]="titleForm" style="width: 100%">
+          <mat-form-field *ngIf="isInEditMode$ | async" style="width: 100%">
             <mat-label>Quiz title</mat-label>
             <input matInput formControlName="title" />
           </mat-form-field>
@@ -153,7 +153,7 @@ import { UserService } from './user.service';
           [question]="question"
           [expanded]="focusedQuestion === question"
           [isInEditMode$]="isInEditMode$"
-          [isDragable]="canEditQuiz"
+          [isDragable]="canEditQuiz && !isInEditMode$"
           [skillTest]="skillTest"
           [isChoicesShuffled]="!!quiz?.isChoicesShuffled"
           [isPerQuestionResult]="!!quiz?.isPerQuestionResult"

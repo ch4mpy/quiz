@@ -354,7 +354,7 @@ import { Component } from '@angular/core';
         If you have any questions about this Privacy Policy, You can contact us:
       </p>
       <ul>
-        <li>By sending us an email: ch4mp@c4-soft.com</li>
+        <li>By sending us an email: ch4mp&#64;c4-soft.com</li>
       </ul>
       <p></p>
     </div> `,

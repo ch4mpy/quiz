@@ -260,7 +260,7 @@ public class QuizController {
 			throw new NotADraftException(quiz.getId());
 		}
 
-		final var question = new Question(dto.label(), quiz.getQuestions().size(), dto.comment());
+		final var question = new Question(dto.label(), dto.formattedBody(), quiz.getQuestions().size(), dto.comment());
 		quiz.add(question);
 		final var created = questionRepo.save(question);
 		return ResponseEntity.created(URI.create("%d".formatted(created.getId()))).build();
@@ -313,6 +313,7 @@ public class QuizController {
 		}
 		question.setComment(dto.comment());
 		question.setLabel(dto.label());
+		question.setFormattedBody(dto.formattedBody());
 		questionRepo.save(question);
 		return ResponseEntity.accepted().build();
 	}
@@ -470,7 +471,13 @@ public class QuizController {
 	private static QuestionDto toDto(Question q) {
 		return q == null
 				? null
-				: new QuestionDto(q.getQuiz().getId(), q.getId(), q.getLabel(), q.getChoices().stream().map(QuizController::toDto).toList(), q.getComment());
+				: new QuestionDto(
+						q.getQuiz().getId(),
+						q.getId(),
+						q.getLabel(),
+						q.getFormattedBody(),
+						q.getChoices().stream().map(QuizController::toDto).toList(),
+						q.getComment());
 	}
 
 	private static ChoiceDto toDto(Choice c) {
