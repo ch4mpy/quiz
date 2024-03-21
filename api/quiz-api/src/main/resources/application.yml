@@ -29,8 +29,12 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: false
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
   cloud:
     openfeign:
       client:
