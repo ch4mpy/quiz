@@ -36,7 +36,7 @@ import { UserService } from './user.service';
         </div>
         <div class="spacer"></div>
         <button
-          *ngIf="canEditQuiz && !quiz?.isPublished && !quiz?.isSubmitted"
+          *ngIf="canEditQuiz && !quiz?.isPublished && !quiz?.isSubmitted && !isModerator"
           (click)="submitDraft()"
           mat-fab
           color="primary"
@@ -95,8 +95,8 @@ import { UserService } from './user.service';
           (click)="editOff()"
           mat-fab
           color="primary"
-          aria-label="Edit"
-          matTooltip="Create or open draft to edit text (will require moderation)"
+          aria-label="Quit edit mode"
+          matTooltip="Quit edit mode"
           class="item-button"
         >
           <mat-icon>edit_off</mat-icon>
@@ -259,6 +259,10 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
 
   get isTrainer(): boolean {
     return this.user.current.isTrainer;
+  }
+
+  get isModerator(): boolean {
+    return this.user.current.isModerator;
   }
 
   get isTestComplete(): boolean {

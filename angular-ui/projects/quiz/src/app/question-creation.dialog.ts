@@ -17,7 +17,7 @@ export interface QuestionCreationDialogData {
   template: `<mat-toolbar>
       <span>New Question</span>
     </mat-toolbar>
-    <form [formGroup]="creationForm">
+    <form [formGroup]="creationForm" (ngSubmit)="createQuestion()">
       <mat-form-field>
         <mat-label>Label</mat-label>
         <input
@@ -29,12 +29,7 @@ export interface QuestionCreationDialogData {
       </mat-form-field>
       <mat-form-field>
         <mat-label>Comment</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="commentInput"
-          (keyup.enter)="createQuestion()"
-        />
+        <input matInput type="text" formControlName="commentInput" />
       </mat-form-field>
       <button
         mat-fab
@@ -42,7 +37,6 @@ export interface QuestionCreationDialogData {
         aria-label="Create new question"
         type="submit"
         [disabled]="creationForm.invalid"
-        (click)="createQuestion()"
       >
         <mat-icon>add</mat-icon>
       </button>

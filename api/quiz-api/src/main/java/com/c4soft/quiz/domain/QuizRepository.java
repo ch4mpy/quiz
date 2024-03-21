@@ -11,19 +11,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public interface QuizRepository extends JpaRepository<Quiz, Long>, JpaSpecificationExecutor<Quiz> {
 
 	Optional<Quiz> findByReplacesId(Long replacedQuizId);
-	
+
 	List<Quiz> findByIsSubmitted(boolean isSubmitted);
 
 	static Specification<Quiz> searchSpec(Optional<String> authorName, Optional<String> quizTitle) {
 		final var currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
 		var spec = Specification.where(isPublished()).or(authoredBy(currentUserName));
-		if(authorName.isPresent()) {
+		if (authorName.isPresent()) {
 			spec = spec.and(authoredBy(authorName.get()));
 		}
-		if(quizTitle.isPresent()) {
+		if (quizTitle.isPresent()) {
 			spec = spec.and(titleContains(quizTitle.get()));
 		}
-		return orderByIdDesc(spec);
+		return orderByTitleDesc(spec);
 	}
 
 	static Specification<Quiz> isPublished() {
@@ -38,9 +38,9 @@ public interface QuizRepository extends JpaRepository<Quiz, Long>, JpaSpecificat
 		return (root, query, cb) -> cb.like(cb.upper(root.get(Quiz_.title)), "%%%s%%".formatted(title.toUpperCase()));
 	}
 
-	static Specification<Quiz> orderByIdDesc(Specification<Quiz> spec) {
+	static Specification<Quiz> orderByTitleDesc(Specification<Quiz> spec) {
 		return (root, query, cb) -> {
-			query.orderBy(cb.desc(root.get(Quiz_.id)));
+			query.orderBy(cb.asc(root.get(Quiz_.title)));
 			return spec.toPredicate(root, query, cb);
 		};
 	}

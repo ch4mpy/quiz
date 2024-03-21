@@ -10,14 +10,13 @@ import { ErrorDialog } from './error.dialog';
       <span>New Quiz</span>
     </mat-toolbar>
     <div style="margin: 1em;">
-      <form [formGroup]="creationForm">
+      <form [formGroup]="creationForm" (ngSubmit)="createQuiz()" id="creationForm">
         <mat-form-field>
           <mat-label>Title</mat-label>
           <input
             matInput
             type="text"
             formControlName="titleInput"
-            (keyup.enter)="createQuiz()"
           />
         </mat-form-field>
         <div>
@@ -54,7 +53,6 @@ import { ErrorDialog } from './error.dialog';
           aria-label="Create new quiz"
           type="submit"
           [disabled]="creationForm.invalid"
-          (click)="createQuiz()"
         >
           <mat-icon>add</mat-icon>
         </button>
@@ -88,8 +86,8 @@ export class QuizCreationDialog {
           isChoicesShuffled:
             !!this.creationForm.controls.isChoicesShuffled.value,
           isPerQuestionResult:
-            !this.creationForm.controls.isNotPerQuestionResult,
-          isReplayEnabled: !this.creationForm.controls.isReplayDisabled,
+            !this.creationForm.controls.isNotPerQuestionResult.value,
+          isReplayEnabled: !this.creationForm.controls.isReplayDisabled.value,
           isTrainerNotifiedOfNewTests:
             !!this.creationForm.controls.isTrainerNotifiedOfNewTests.value,
         },

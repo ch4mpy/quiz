@@ -87,6 +87,10 @@ public class QuizController {
 	@Operation(responses = { @ApiResponse(responseCode = "201", headers = @Header(name = HttpHeaders.LOCATION, description = "ID of the created quiz")) })
 	public ResponseEntity<Void> createQuiz(@RequestBody @Valid QuizUpdateDto dto, QuizAuthentication auth) {
 		final var quiz = new Quiz(dto.title(), auth.getName());
+		quiz.setIsChoicesShuffled(dto.isChoicesShuffled());
+		quiz.setIsPerQuestionResult(dto.isPerQuestionResult());
+		quiz.setIsReplayEnabled(dto.isReplayEnabled());
+		quiz.setIsTrainerNotifiedOfNewTests(dto.isTrainerNotifiedOfNewTests());
 		final var created = quizRepo.save(quiz);
 		return ResponseEntity.created(URI.create("%d".formatted(created.getId()))).build();
 	}
