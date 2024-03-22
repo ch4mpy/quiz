@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { QuizDto, QuizzesApi } from '@c4-soft/quiz-api';
-import { QuizCreationDialog } from './quiz-creation.dialog';
 import { ConfirmationDialog } from './confirmation.dialog';
-import { UserService } from './user.service';
 import { ErrorDialog } from './error.dialog';
-import { FormControl, FormGroup } from '@angular/forms';
+import { QuizCreationDialog } from './quiz-creation.dialog';
+import { UserService } from './user.service';
 
 @Component({
   selector: 'app-quiz-selection',
@@ -172,6 +172,9 @@ export class QuizSelectionPage implements OnInit {
   }
 
   deleteQuiz(quizId: number) {
+    if (!this.user.current.isAuthenticated) {
+      return;
+    }
     this.dialog
       .open(ConfirmationDialog, {
         data: { message: 'Delete quiz permanently?' },

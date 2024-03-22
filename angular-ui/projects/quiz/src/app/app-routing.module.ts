@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { QuizSelectionPage } from './quiz-selection.page';
-import { QuizDetailsPage } from './quiz-details.page';
-import { SkillTestSelectionPage } from './skill-test-selection.page';
-import { SkillTestDetailsPage } from './skill-test-details.page';
 import { PrivacyPolicyPage } from './privacy-policy.page';
+import { QuizDetailsPage } from './quiz-details.page';
+import { QuizSelectionPage } from './quiz-selection.page';
+import { SkillTestDetailsPage } from './skill-test-details.page';
+import { SkillTestSelectionPage } from './skill-test-selection.page';
 
 export const routes: Routes = [
   { path: 'quizzes', component: QuizSelectionPage },
@@ -12,11 +12,11 @@ export const routes: Routes = [
   { path: 'privacy', component: PrivacyPolicyPage },
   { path: 'tests', component: SkillTestSelectionPage },
   { path: 'tests/:quizId/:traineeName', component: SkillTestDetailsPage },
-  { path: '**',   redirectTo: '/quizzes' }
+  { path: '**', redirectTo: '/quizzes' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

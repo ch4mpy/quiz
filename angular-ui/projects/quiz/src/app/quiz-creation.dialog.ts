@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { QuizzesApi } from '@c4-soft/quiz-api';
 import { ErrorDialog } from './error.dialog';
+import { UserService } from './user.service';
 
 @Component({
   selector: 'app-quiz-creation',
@@ -10,14 +11,14 @@ import { ErrorDialog } from './error.dialog';
       <span>New Quiz</span>
     </mat-toolbar>
     <div style="margin: 1em;">
-      <form [formGroup]="creationForm" (ngSubmit)="createQuiz()" id="creationForm">
+      <form
+        [formGroup]="creationForm"
+        (ngSubmit)="createQuiz()"
+        id="creationForm"
+      >
         <mat-form-field>
           <mat-label>Title</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="titleInput"
-          />
+          <input matInput type="text" formControlName="titleInput" />
         </mat-form-field>
         <div>
           <mat-checkbox
@@ -72,11 +73,12 @@ export class QuizCreationDialog {
   constructor(
     private dialogRef: MatDialogRef<QuizCreationDialog>,
     private quizApi: QuizzesApi,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private user: UserService
   ) {}
 
   createQuiz() {
-    if (this.creationForm.invalid) {
+    if (this.creationForm.invalid || !this.user.current.isAuthenticated) {
       return;
     }
     this.quizApi

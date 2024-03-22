@@ -20,6 +20,7 @@ import { QuillModules } from 'ngx-quill';
 import { BehaviorSubject, Observable, debounceTime } from 'rxjs';
 import { ConfirmationDialog } from './confirmation.dialog';
 import { ErrorDialog } from './error.dialog';
+import { UserService } from './user.service';
 
 @Component({
   selector: 'app-question-expansion-pannel',
@@ -63,7 +64,11 @@ import { ErrorDialog } from './error.dialog';
       style="width: 100%"
     >
     </quill-editor>
-    <div *ngIf="!(isInEditMode$ | async)" [innerHTML]="question.formattedBody" style="width: 100%"></div>
+    <div
+      *ngIf="!(isInEditMode$ | async)"
+      [innerHTML]="question.formattedBody"
+      style="width: 100%"
+    ></div>
     <mat-list #choices>
       <mat-list-item
         *ngFor="let choice of question.choices"
@@ -184,22 +189,23 @@ export class QuestionExpansionPannelComponent implements OnInit {
 
   quillConfig: QuillModules = {
     toolbar: [
-      ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+      ['bold', 'italic', 'underline', 'strike'], // toggled buttons
       ['code-block'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-      [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-      [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-      [{ 'align': [] }],
-      ['clean'],                                         // remove formatting button
-      ['link']                         // link and image, video
-    ]
-  }
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ script: 'sub' }, { script: 'super' }], // superscript/subscript
+      [{ indent: '-1' }, { indent: '+1' }], // outdent/indent
+      [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+      [{ align: [] }],
+      ['clean'], // remove formatting button
+      ['link'], // link and image, video
+    ],
+  };
 
   constructor(
     private quizApi: QuizzesApi,
     private dialog: MatDialog,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private user: UserService
   ) {}
 
   ngOnInit() {
@@ -237,7 +243,11 @@ export class QuestionExpansionPannelComponent implements OnInit {
   }
 
   private updateQuestion() {
-    if (this.labelCtrl.valid && this.commentCtrl.valid) {
+    if (
+      this.labelCtrl.valid &&
+      this.commentCtrl.valid &&
+      this.user.current.isAuthenticated
+    ) {
       const sanitizedBody = this.sanitizeHtml(this.formattedBodyCtrl.value);
       this.quizApi
         .updateQuestion(this.question.quizId, this.question.questionId, {
@@ -265,7 +275,7 @@ export class QuestionExpansionPannelComponent implements OnInit {
       })
       .afterClosed()
       .subscribe((isConfirmed) => {
-        if (!isConfirmed) {
+        if (!isConfirmed || !this.user.current.isAuthenticated) {
           return;
         }
         this.quizApi

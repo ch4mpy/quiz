@@ -12,6 +12,7 @@ import { ChoiceDto, ChoiceUpdateDto, QuizzesApi } from '@c4-soft/quiz-api';
 import { Observable, Subscription, debounceTime } from 'rxjs';
 import { ConfirmationDialog } from './confirmation.dialog';
 import { ErrorDialog } from './error.dialog';
+import { UserService } from './user.service';
 
 export interface ChoiceEvent {
   choiceId: number;
@@ -79,7 +80,11 @@ export class ChoiceItemComponent implements OnInit, OnDestroy {
 
   form!: FormGroup;
 
-  constructor(private quizApi: QuizzesApi, private dialog: MatDialog) {}
+  constructor(
+    private quizApi: QuizzesApi,
+    private dialog: MatDialog,
+    private user: UserService
+  ) {}
 
   ngOnInit(): void {
     this.form = new FormGroup({
@@ -95,7 +100,7 @@ export class ChoiceItemComponent implements OnInit, OnDestroy {
         this.sub = this.form.valueChanges
           .pipe(debounceTime(750))
           .subscribe((formValue) => {
-            if (this.form.valid) {
+            if (this.form.valid && this.user.current.isAuthenticated) {
               const dto: ChoiceUpdateDto = {
                 label: formValue.label || '',
                 isGood: formValue.isGood || false,
@@ -171,7 +176,7 @@ export class ChoiceItemComponent implements OnInit, OnDestroy {
       })
       .afterClosed()
       .subscribe((isConfirmed) => {
-        if (!isConfirmed) {
+        if (!isConfirmed || !this.user.current.isAuthenticated) {
           return;
         }
         if (this.choice.choiceId < 0) {

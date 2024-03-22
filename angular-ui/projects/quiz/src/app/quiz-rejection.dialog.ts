@@ -14,7 +14,9 @@ import { MatDialogRef } from '@angular/material/dialog';
     </form>
     <mat-dialog-actions align="end">
       <button mat-button cdkFocusInitial (click)="cancel()">Cancel</button>
-      <button mat-button [disabled]="!rejectionForm.valid" (click)="reject()">Reject</button>
+      <button mat-button [disabled]="!rejectionForm.valid" (click)="reject()">
+        Reject
+      </button>
     </mat-dialog-actions>
   `,
   styles: [],
@@ -34,7 +36,7 @@ export class QuizRejectionDialog {
   }
 
   reject() {
-    if(this.rejectionForm.valid) {
+    if (this.rejectionForm.valid) {
       this.dialog.close(this.rejectionForm.controls.message.value);
     }
   }

@@ -7,6 +7,7 @@ import {
 } from '@angular/material/dialog';
 import { QuizzesApi } from '@c4-soft/quiz-api';
 import { ErrorDialog } from './error.dialog';
+import { UserService } from './user.service';
 
 export interface QuestionCreationDialogData {
   quizId: number;
@@ -53,11 +54,12 @@ export class QuestionCreationDialog {
     @Inject(MAT_DIALOG_DATA) private data: QuestionCreationDialogData,
     private dialogRef: MatDialogRef<QuestionCreationDialog>,
     private quizApi: QuizzesApi,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private user: UserService
   ) {}
 
   createQuestion() {
-    if (this.creationForm.invalid) {
+    if (this.creationForm.invalid || !this.user.current.isAuthenticated) {
       return;
     }
     this.quizApi

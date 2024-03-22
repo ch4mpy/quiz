@@ -36,9 +36,9 @@ import { Component } from '@angular/core';
         </li>
         <li>
           <p>
-            <strong>"Application"</strong> means the software program provided by
-            the Company downloaded by You on any electronic device, named Jérôme
-            Wacongne.
+            <strong>"Application"</strong> means the software program provided
+            by the Company downloaded by You on any electronic device, named
+            Jérôme Wacongne.
           </p>
         </li>
         <li>

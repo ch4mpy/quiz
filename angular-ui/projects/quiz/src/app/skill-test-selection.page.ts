@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import {
   QuizDto,
   QuizzesApi,
   SkillTestApi,
   SkillTestResultPreviewDto,
 } from '@c4-soft/quiz-api';
+import * as moment from 'moment';
+import { ConfirmationDialog } from './confirmation.dialog';
 import { ErrorDialog } from './error.dialog';
 import { UserService } from './user.service';
-import * as moment from 'moment';
-import { Router } from '@angular/router';
-import { ConfirmationDialog } from './confirmation.dialog';
 
 @Component({
   selector: 'app-skill-test-selection',
@@ -173,6 +173,9 @@ export class SkillTestSelectionPage implements OnInit {
   }
 
   deleteSkillTest(traineeName: string) {
+    if (!this.user.current.isAuthenticated) {
+      return;
+    }
     this.dialog
       .open(ConfirmationDialog, {
         data: { message: 'Delete skill-test permanently?' },

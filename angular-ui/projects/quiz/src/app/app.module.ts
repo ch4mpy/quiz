@@ -28,7 +28,7 @@ import {
   ApiModule as BffApiModule,
 } from '@c4-soft/bff-api';
 
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import {
@@ -42,6 +42,7 @@ import {
   Configuration as QuizApiConfiguration,
   ApiModule as QuizApiModule,
 } from '@c4-soft/quiz-api';
+import { QuillModule } from 'ngx-quill';
 import { ChoiceItemComponent } from './choice-item.component';
 import { ConfirmationDialog } from './confirmation.dialog';
 import { ErrorDialog } from './error.dialog';
@@ -56,7 +57,8 @@ import { SkillTestDetailsPage } from './skill-test-details.page';
 import { SkillTestResultDialog } from './skill-test-result.dialog';
 import { SkillTestSelectionPage } from './skill-test-selection.page';
 import { ToolbarComponent } from './toolbar.component';
-import { QuillModule } from 'ngx-quill';
+import { UnauthorizedInterceptor } from './unauthorized-interceptor';
+import { UserService } from './user.service';
 
 export function bffApiConfigFactory(): BffApiConfiguration {
   const config = new BffApiConfiguration({
@@ -120,6 +122,15 @@ export function quizApiConfigFactory(): QuizApiConfiguration {
     QuillModule.forRoot(),
   ],
   providers: [
+    // FIXME: circular dependency
+    /*{
+      provide: HTTP_INTERCEPTORS,
+      useFactory: function (user: UserService) {
+        return new UnauthorizedInterceptor(user);
+      },
+      multi: true,
+      deps: [UserService],
+    },*/
     provideRouter(routes, withComponentInputBinding()),
     {
       provide: DateAdapter,

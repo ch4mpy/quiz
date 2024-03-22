@@ -36,7 +36,12 @@ import { UserService } from './user.service';
         </div>
         <div class="spacer"></div>
         <button
-          *ngIf="canEditQuiz && !quiz?.isPublished && !quiz?.isSubmitted && !isModerator"
+          *ngIf="
+            canEditQuiz &&
+            !quiz?.isPublished &&
+            !quiz?.isSubmitted &&
+            !isModerator
+          "
           (click)="submitDraft()"
           mat-fab
           color="primary"
@@ -47,7 +52,11 @@ import { UserService } from './user.service';
           <mat-icon>rocket_launch</mat-icon>
         </button>
         <button
-          *ngIf="canPublish && !quiz?.isPublished && (quiz?.isSubmitted || isModerator)"
+          *ngIf="
+            canPublish &&
+            !quiz?.isPublished &&
+            (quiz?.isSubmitted || isModerator)
+          "
           (click)="publishDraft()"
           mat-fab
           color="primary"
@@ -153,7 +162,7 @@ import { UserService } from './user.service';
           [question]="question"
           [expanded]="focusedQuestion === question"
           [isInEditMode$]="isInEditMode$"
-          [isDragable]="canEditQuiz && !(isInEditMode$.value)"
+          [isDragable]="canEditQuiz && !isInEditMode$.value"
           [skillTest]="skillTest"
           [isChoicesShuffled]="!!quiz?.isChoicesShuffled"
           [isPerQuestionResult]="!!quiz?.isPerQuestionResult"
@@ -245,7 +254,9 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
 
   get canEditQuiz(): boolean {
     return (
-      this.quiz?.authorName === this.user.current.name && !this.quiz.isReplaced && (this.user.current.isModerator || !this.quiz?.isPublished)
+      this.quiz?.authorName === this.user.current.name &&
+      !this.quiz.isReplaced &&
+      (this.user.current.isModerator || !this.quiz?.isPublished)
     );
   }
 
@@ -293,7 +304,7 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
   }
 
   reorderQuestions(dragDrop: CdkDragDrop<QuestionDto[]>) {
-    if (!this.quiz) {
+    if (!this.quiz || !this.user.current.isAuthenticated) {
       return;
     }
     moveItemInArray(
@@ -323,7 +334,7 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
   }
 
   createCopy() {
-    if (!this.quiz?.id) {
+    if (!this.quiz?.id || !this.user.current.isAuthenticated) {
       return;
     }
     this.quizApi.createDraft(this.quiz.id, 'response').subscribe({
@@ -361,6 +372,9 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
   }
 
   submitDraft() {
+    if (!this.user.current.isAuthenticated) {
+      return;
+    }
     if (!!this.quiz?.id) {
       this.isLoading = true;
       this.quizApi.submitDraft(this.quiz.id).subscribe({
@@ -380,6 +394,9 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
   }
 
   publishDraft() {
+    if (!this.user.current.isAuthenticated) {
+      return;
+    }
     if (!!this.quiz?.id) {
       this.isLoading = true;
       this.quizApi.publishDraft(this.quiz.id).subscribe({
@@ -396,6 +413,9 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
   }
 
   rejectDraft() {
+    if (!this.user.current.isAuthenticated) {
+      return;
+    }
     const dialogRef = this.dialog.open(QuizRejectionDialog);
     dialogRef.afterClosed().subscribe((message) => {
       if (!!message) {
@@ -488,6 +508,9 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
     this.titleFormSubscription = this.titleForm.controls[
       'title'
     ].valueChanges.subscribe((title) => {
+      if (!this.user.current.isAuthenticated) {
+        return;
+      }
       this.isLoading = true;
       this.quizApi
         .updateQuiz(this.quiz?.id || -1, {
@@ -514,6 +537,9 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
 
     this.optionsFormSubscription = this.quizOptionsForm.valueChanges.subscribe(
       (options) => {
+        if (!this.user.current.isAuthenticated) {
+          return;
+        }
         this.isLoading = true;
         this.quizApi
           .updateQuiz(this.quiz?.id || -1, {
@@ -545,16 +571,20 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
   }
 
   submitAnswer() {
+    if (!this.user.current.isAuthenticated) {
+      return;
+    }
     this.isLoading = true;
     this.skillTestApi.submitSkillTest(this.skillTest, 'response').subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.dialog.open(SkillTestResultDialog, { data: {
-          dto: response.body,
-          testUri: response.headers.get('Location'),
-          isAuthorNotified: !!this.quiz?.isTrainerNotifiedOfNewTests,
-       }
-      });
+        this.dialog.open(SkillTestResultDialog, {
+          data: {
+            dto: response.body,
+            testUri: response.headers.get('Location'),
+            isAuthorNotified: !!this.quiz?.isTrainerNotifiedOfNewTests,
+          },
+        });
         this.isAnswerSubmitted = true;
       },
       error: (error) => {
