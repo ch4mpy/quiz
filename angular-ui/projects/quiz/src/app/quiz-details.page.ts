@@ -153,7 +153,7 @@ import { UserService } from './user.service';
           [question]="question"
           [expanded]="focusedQuestion === question"
           [isInEditMode$]="isInEditMode$"
-          [isDragable]="canEditQuiz && !isInEditMode$"
+          [isDragable]="canEditQuiz && !(isInEditMode$.value)"
           [skillTest]="skillTest"
           [isChoicesShuffled]="!!quiz?.isChoicesShuffled"
           [isPerQuestionResult]="!!quiz?.isPerQuestionResult"
