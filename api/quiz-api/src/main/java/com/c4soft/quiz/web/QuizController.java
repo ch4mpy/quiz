@@ -406,7 +406,7 @@ public class QuizController {
 		if (choice == null) {
 			return ResponseEntity.notFound().build();
 		}
-		if (!Objects.equals(dto.label(), choice.getLabel()) && (quiz.getIsPublished() || quiz.getReplacedBy() != null)) {
+		if (!Objects.equals(dto.label(), choice.getLabel()) && !auth.isModerator() && (quiz.getIsPublished() || quiz.getReplacedBy() != null)) {
 			throw new NotADraftException(quiz.getId());
 		}
 		choice.setIsGood(dto.isGood());
