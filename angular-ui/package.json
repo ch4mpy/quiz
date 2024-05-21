@@ -18,27 +18,27 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^17.3.1",
-    "@angular/cdk": "^17.3.1",
-    "@angular/common": "^17.3.1",
-    "@angular/compiler": "^17.3.1",
-    "@angular/core": "^17.3.1",
-    "@angular/forms": "^17.3.1",
-    "@angular/material": "^17.3.1",
-    "@angular/material-moment-adapter": "^17.3.1",
-    "@angular/platform-browser": "^17.3.1",
-    "@angular/platform-browser-dynamic": "^17.3.1",
-    "@angular/router": "^17.3.1",
-    "ngx-quill": "^25.1.1",
+    "@angular/animations": "^17.3.9",
+    "@angular/cdk": "^17.3.9",
+    "@angular/common": "^17.3.9",
+    "@angular/compiler": "^17.3.9",
+    "@angular/core": "^17.3.9",
+    "@angular/forms": "^17.3.9",
+    "@angular/material": "^17.3.9",
+    "@angular/material-moment-adapter": "^17.3.9",
+    "@angular/platform-browser": "^17.3.9",
+    "@angular/platform-browser-dynamic": "^17.3.9",
+    "@angular/router": "^17.3.9",
+    "ngx-quill": "^25.3.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.6.2",
-    "zone.js": "~0.14.4"
+    "zone.js": "~0.14.6"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^17.3.1",
-    "@angular/cli": "^17.3.1",
-    "@angular/compiler-cli": "^17.3.1",
-    "@openapitools/openapi-generator-cli": "^2.13.1",
+    "@angular-devkit/build-angular": "^17.3.7",
+    "@angular/cli": "^17.3.7",
+    "@angular/compiler-cli": "^17.3.9",
+    "@openapitools/openapi-generator-cli": "^2.13.4",
     "@types/jasmine": "~4.3.0",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.0",
@@ -47,6 +47,6 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "ng-packagr": "^17.3.0",
-    "typescript": "~5.4.3"
+    "typescript": "~5.4.5"
   }
 }
