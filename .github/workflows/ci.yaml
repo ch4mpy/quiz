@@ -15,11 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         
-      - name: Set up JDK 21
+      - name: Set up JDK 22
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '22'
           cache: 'maven'
 
       - uses: actions/cache@v3
