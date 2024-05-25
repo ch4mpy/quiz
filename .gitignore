@@ -46,7 +46,7 @@
 **/.vscode
 
 # Spring Boot
--!**/.mvn/wrapper/maven-wrapper.jar
+api/.mvn/wrapper/maven-wrapper.jar
 
 # fastlane
 #
