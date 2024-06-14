@@ -1,5 +1,15 @@
 {"properties": [
   {
+    "name": "scheme",
+    "type": "java.lang.String",
+    "description": "'http' or 'https', used to build URIs involved in authentication and can be used in 'gateway-uri', 'bao-loc-api-uri' or 'ui-uri'"
+  },
+  {
+    "name": "hostname",
+    "type": "java.lang.String",
+    "description": "the host name"
+  },
+  {
     "name": "oauth2-issuer",
     "type": "java.net.URI",
     "description": "OpenID issuer URI"

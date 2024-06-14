@@ -114,3 +114,6 @@ resource-server-spring/**
 
 # OpenAPI specs
 **/*.openapi.json
+
+# Generated infra
+compose-*.yml

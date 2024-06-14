@@ -1,17 +1,16 @@
 scheme: http
-keycloak-host: https://oidc.c4-soft.com/auth
+hostname: localhost
+keycloak-host: http://${hostname}/auth
 keycloak-realm: quiz
 oauth2-issuer: ${keycloak-host}/realms/${keycloak-realm}
 oauth2-client-id: quiz-bff
-oauth2-client-secret: change-me
+oauth2-client-secret: secret
 
-gateway-uri: ${scheme}://localhost:${server.port}
-quiz-api-uri: ${scheme}://localhost:7084
-ui-host: https://localhost:4200
+gateway-uri: ${scheme}://${hostname}:${server.port}
+quiz-api-uri: ${scheme}://${hostname}:7084
 
 server:
-  port: 8080
-  shutdown: graceful
+  port: 7080
   ssl:
     enabled: false
 
@@ -35,43 +34,18 @@ spring:
             client-id: ${oauth2-client-id}
             client-secret: ${oauth2-client-secret}
             authorization-grant-type: authorization_code
-            scope:
-            - openid
-            - profile
-            - email
-            - offline_access
+            scope: openid, profile, email, offline_access
   cloud:
     gateway:
       default-filters:
       - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Request-Method Access-Control-Request-Headers
       routes:
-      # Redirection from / to /ui/
-      - id: home
-        uri: ${gateway-uri}
-        predicates:
-        - Path=/
-        filters:
-        - RedirectTo=301,${gateway-uri}/ui/
-      # Serve the Angular app through the gateway
-      - id: ui
-        uri: ${ui-host}
-        predicates:
-        - Path=/ui/**
-      # Access the quiz API with BFF pattern
       - id: quiz-bff
         uri: ${quiz-api-uri}
         predicates:
         - Path=/bff/v1/**
         filters:
         - TokenRelay=
-        - SaveSession
-        - StripPrefix=2
-      # Access the quiz API with OAuth2 clients like Postman
-      - id: quiz-resource-server
-        uri: ${quiz-api-uri}
-        predicates:
-        - Path=/resource-server/v1/**
-        filters:
         - SaveSession
         - StripPrefix=2
       # Cert-manager http01 challenge for SSL certificates on K8s
@@ -95,11 +69,12 @@ com:
           security-matchers:
           - /login/**
           - /oauth2/**
-          - /logout
+          - /logout/**
           - /bff/**
           permit-all:
           - /login/**
           - /oauth2/**
+          - /logout/connect/back-channel/quiz-bff
           - /bff/**
           csrf: cookie-accessible-from-js
           post-login-redirect-path: /ui/
@@ -107,12 +82,14 @@ com:
           oauth2-redirections:
             rp-initiated-logout: ACCEPTED
           pkce-forced: true
+          back-channel-logout:
+            enabled: true
+            internal-logout-uri: ${scheme}://${hostname}:${serve.port}/logout
         # OAuth2 resource server configuration
         resourceserver:
           permit-all:
           - /login-options
           - /ui/**
-          - /resource-server/**
           - /v3/api-docs/**
           - /actuator/health/readiness
           - /actuator/health/liveness

@@ -25,6 +25,11 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>jakarta.data</groupId>
+			<artifactId>jakarta.data-api</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
@@ -36,9 +41,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
+		<!-- MapStruct -->
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-openfeign</artifactId>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
 		</dependency>
 
 		<!-- OAuth2 -->
@@ -49,6 +56,12 @@
 		<dependency>
 			<groupId>com.c4-soft.springaddons</groupId>
 			<artifactId>spring-addons-starter-oidc</artifactId>
+		</dependency>
+
+		<!-- REST -->
+		<dependency>
+			<groupId>com.c4-soft.springaddons</groupId>
+			<artifactId>spring-addons-starter-rest</artifactId>
 		</dependency>
 
 		<!-- Observability -->
@@ -118,6 +131,50 @@
 					<execution>
 						<goals>
 							<goal>enhance</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<skipValidateSpec>true</skipValidateSpec>
+							<inputSpec>
+								${project.basedir}/../keycloak-admin-api.openapi.json</inputSpec>
+							<apiPackage>org.keycloak.admin.api</apiPackage>
+							<modelPackage>org.keycloak.admin.model</modelPackage>
+							<!-- prevent a name colllision between the
+							deprecated authTime (Integer) and the new auth_time
+							(Long) in IDToken -->
+							<nameMappings>auth_time=authTimeLong</nameMappings>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.spotify.fmt</groupId>
+				<artifactId>fmt-maven-plugin</artifactId>
+				<version>2.23</version>
+				<configuration>
+					<sourceDirectory>target/generated-sources</sourceDirectory>
+					<verbose>true</verbose>
+					<filesNamePattern>.*\.java</filesNamePattern>
+					<skip>false</skip>
+					<skipSourceDirectory>false</skipSourceDirectory>
+					<skipTestSourceDirectory>true</skipTestSourceDirectory>
+					<skipSortingImports>false</skipSortingImports>
+					<style>google</style>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>format</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -195,6 +252,11 @@
 								<goals>
 									<goal>start</goal>
 								</goals>
+								<configuration>
+									<environmentVariables>
+										<KEYCLOAK_HOST>https://oidc.c4-soft.com/auth</KEYCLOAK_HOST>
+									</environmentVariables>
+								</configuration>
 							</execution>
 							<execution>
 								<id>post-integration-test</id>

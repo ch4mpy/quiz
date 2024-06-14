@@ -95,6 +95,9 @@
 	<profiles>
 		<profile>
 			<id>openapi</id>
+			<properties>
+				<integration-tests.port>7080</integration-tests.port>
+			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>org.springdoc</groupId>
@@ -124,6 +127,11 @@
 								<goals>
 									<goal>start</goal>
 								</goals>
+								<configuration>
+									<environmentVariables>
+										<KEYCLOAK_HOST>https://oidc.c4-soft.com/auth</KEYCLOAK_HOST>
+									</environmentVariables>
+								</configuration>
 							</execution>
 							<execution>
 								<id>post-integration-test</id>

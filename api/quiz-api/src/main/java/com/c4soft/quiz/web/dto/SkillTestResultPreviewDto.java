@@ -1,5 +1,7 @@
+/* (C)2024 */
 package com.c4soft.quiz.web.dto;
 
 import jakarta.validation.constraints.NotNull;
 
-public record SkillTestResultPreviewDto(@NotNull String traineeName, @NotNull Double score) {}
+public record SkillTestResultPreviewDto(@NotNull String traineeName, @NotNull Double score) {
+}

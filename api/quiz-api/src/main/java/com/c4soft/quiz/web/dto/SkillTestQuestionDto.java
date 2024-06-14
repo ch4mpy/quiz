@@ -1,8 +1,7 @@
+/* (C)2024 */
 package com.c4soft.quiz.web.dto;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
-import jakarta.validation.constraints.NotNull;
-
-public record SkillTestQuestionDto(@NotNull Long questionId, List<Long> choices) {
-}
+public record SkillTestQuestionDto(@NotNull Long questionId, List<Long> choices) {}

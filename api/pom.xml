@@ -16,9 +16,9 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<java.version>22</java.version>
+		<java.version>21</java.version>
 		<spring-cloud-dependencies.version>2023.0.1</spring-cloud-dependencies.version>
-		<com.c4-soft.springaddons.version>7.8.0</com.c4-soft.springaddons.version>
+		<com.c4-soft.springaddons.version>7.8.2</com.c4-soft.springaddons.version>
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
 		<org.mapstruct.version>1.6.0.Beta2</org.mapstruct.version>
 		<openapi-generator-maven-plugin.version>7.6.0</openapi-generator-maven-plugin.version>
@@ -27,7 +27,7 @@
 		<springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
 		<integration-tests.scheme>http</integration-tests.scheme>
 		<integration-tests.hostname>localhost</integration-tests.hostname>
-		<integration-tests.port>8080</integration-tests.port>
+		<integration-tests.port>7080</integration-tests.port>
 		<ca-certificates.binding>${project.basedir}/bindings/ca-certificates</ca-certificates.binding>
 		<springdoc-openapi.output-dir>${project.basedir}/../../angular-ui</springdoc-openapi.output-dir>
 	</properties>
@@ -101,11 +101,37 @@
 			</dependency>
 			<dependency>
 				<groupId>com.c4-soft.springaddons</groupId>
+				<artifactId>spring-addons-starter-rest</artifactId>
+				<version>${com.c4-soft.springaddons.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.c4-soft.springaddons</groupId>
 				<artifactId>spring-addons-starter-openapi</artifactId>
 				<version>${com.c4-soft.springaddons.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<profiles>
+		<profile>
+			<id>arm64</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.springframework.boot</groupId>
+							<artifactId>spring-boot-maven-plugin</artifactId>
+							<configuration>
+								<image>
+									<builder>dashaun/builder:tiny</builder>
+								</image>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<pluginManagement>
@@ -154,6 +180,9 @@
 								<binding>
 									${ca-certificates.binding}:/platform/bindings/ca-certificates:ro</binding>
 							</bindings>
+							<env>
+								<BP_JVM_VERSION>${java.version}</BP_JVM_VERSION>
+							</env>
 						</image>
 						<excludes>
 							<exclude>
@@ -173,6 +202,33 @@
 						<outputFileName>${project.artifactId}.openapi.json</outputFileName>
 						<outputDir>${springdoc-openapi.output-dir}</outputDir>
 						<skip>false</skip>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.openapitools</groupId>
+					<artifactId>openapi-generator-maven-plugin</artifactId>
+					<version>${openapi-generator-maven-plugin.version}</version>
+					<configuration>
+						<generatorName>spring</generatorName>
+						<cleanupOutput>false</cleanupOutput>
+						<skipIfSpecIsUnchanged>true</skipIfSpecIsUnchanged>
+						<generateApiTests>false</generateApiTests>
+						<generateModelDocumentation>false</generateModelDocumentation>
+						<generateModelTests>false</generateModelTests>
+						<generateSupportingFiles>false</generateSupportingFiles>
+						<configOptions>
+							<documentationProvider>none</documentationProvider>
+							<annotationLibrary>none</annotationLibrary>
+							<ensureUniqueParams>true</ensureUniqueParams>
+							<generateBuilders>false</generateBuilders>
+							<interfaceOnly>true</interfaceOnly>
+							<library>spring-http-interface</library>
+							<openApiNullable>false</openApiNullable>
+							<serializableModel>true</serializableModel>
+							<skipDefaultInterface>true</skipDefaultInterface>
+							<useJakartaEe>true</useJakartaEe>
+							<useOptional>true</useOptional>
+						</configOptions>
 					</configuration>
 				</plugin>
 			</plugins>
