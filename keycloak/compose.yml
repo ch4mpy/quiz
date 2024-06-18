@@ -4,7 +4,7 @@ services:
 
   nginx-reverse-proxy:
     container_name: quiz.auth-only.nginx-reverse-proxy
-    image: quiz/nginx-reverse-proxy
+    image: quiz-nginx-reverse-proxy
     ports:
     - 80:80
     extra_hosts:

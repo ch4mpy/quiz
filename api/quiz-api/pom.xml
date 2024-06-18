@@ -11,6 +11,10 @@
 	</parent>
 	<artifactId>quiz-api</artifactId>
 
+	<properties>
+		<imageName>quiz-api:${project.version}</imageName>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
@@ -254,7 +258,8 @@
 								</goals>
 								<configuration>
 									<environmentVariables>
-										<KEYCLOAK_HOST>https://oidc.c4-soft.com/auth</KEYCLOAK_HOST>
+										<KEYCLOAK_HOST>
+											https://oidc.c4-soft.com/auth</KEYCLOAK_HOST>
 									</environmentVariables>
 								</configuration>
 							</execution>

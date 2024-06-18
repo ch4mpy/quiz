@@ -28,25 +28,25 @@ fi
 host=$(echo $HOSTNAME  | tr '[A-Z]' '[a-z]')
 
 cd api
-echo "***********************"
-echo "sh ./mvnw clean install"
-echo "***********************"
+echo "************************************"
+echo "sh ./mvnw clean install -Popenapi,h2"
+echo "************************************"
 echo ""
-sh ./mvnw clean install
+sh ./mvnw clean install -Popenapi,h2
 
 echo ""
 echo "*****************************************************************************************************************************************"
-echo "sh ./mvnw -pl quiz-api spring-boot:build-image -Dspring-boot.build-image.imageName=quiz/api $MAVEN_PROFILE_ARG"
+echo "sh ./mvnw -pl quiz-api spring-boot:build-image -DskipTests $MAVEN_PROFILE_ARG"
 echo "*****************************************************************************************************************************************"
 echo ""
-sh ./mvnw -pl quiz-api spring-boot:build-image -Dspring-boot.build-image.imageName=quiz/api $MAVEN_PROFILE_ARG
+sh ./mvnw -pl quiz-api spring-boot:build-image -DskipTests $MAVEN_PROFILE_ARG
 
 echo ""
 echo "*****************************************************************************************************************"
-echo "sh ./mvnw -pl bff spring-boot:build-image -Dspring-boot.build-image.imageName=quiz/bff $MAVEN_PROFILE_ARG"
+echo "sh ./mvnw -pl bff spring-boot:build-image -DskipTests $MAVEN_PROFILE_ARG"
 echo "*****************************************************************************************************************"
 echo ""
-sh ./mvnw -pl bff spring-boot:build-image -Dspring-boot.build-image.imageName=quiz/bff $MAVEN_PROFILE_ARG
+sh ./mvnw -pl bff spring-boot:build-image -DskipTests $MAVEN_PROFILE_ARG
 cd ..
 
 rm -f "compose-${host}.yml"
@@ -68,8 +68,8 @@ npm i
 npm run build
 cd ..
 
-docker build -t quiz/nginx-reverse-proxy ./nginx-reverse-proxy
-docker build -t quiz/ui ./angular-ui
+docker build -t quiz-nginx-reverse-proxy ./nginx-reverse-proxy
+docker build -t quiz-ui ./angular-ui
 
 docker compose -f compose-${host}.yml up -d
 

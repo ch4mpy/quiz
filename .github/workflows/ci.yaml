@@ -37,7 +37,8 @@ jobs:
         run: |
           cd ./api
           ./mvnw clean install -Popenapi,h2
-          ./mvnw spring-boot:build-image -DskipTests
+          ./mvnw -pl quiz-api spring-boot:build-image -Pnative -DskipTests
+          ./mvnw -pl bff spring-boot:build-image -Pnative -DskipTests
 
       - name: Set VERSION environment variable
         run: |
@@ -55,7 +56,7 @@ jobs:
 
       - name: Docker Tag-Push gateway ${{ env.VERSION }}
         run: |
-          docker tag bff:${{ env.VERSION }} ${{ secrets.DOCKERHUB_USERNAME }}/quiz-bff
+          docker tag quiz-bff:${{ env.VERSION }} ${{ secrets.DOCKERHUB_USERNAME }}/quiz-bff
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/quiz-bff
 
       - name: Docker Tag-Push API ${{ env.VERSION }}
