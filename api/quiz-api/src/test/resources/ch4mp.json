@@ -7,5 +7,6 @@
   	]
   },
   "scope": "openid email",
-  "iss": "https://oidc.c4-soft.com/auth/realms/quiz"
+  "iss": "http://localhost/auth/realms/quiz",
+  "email": "ch4mp@c4-soft.com"
 }

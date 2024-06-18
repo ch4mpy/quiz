@@ -8,5 +8,6 @@
   "resource_access": {
   },
   "scope": "openid email",
-  "iss": "https://oidc.c4-soft.com/auth/realms/quiz"
+  "iss": "http://localhost/auth/realms/quiz",
+  "email": "tonton-pirate@c4-soft.com"
 }

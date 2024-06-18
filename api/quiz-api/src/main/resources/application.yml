@@ -1,10 +1,11 @@
 scheme: http
-keycloak-host: https://oidc.c4-soft.com/auth
+hostname: localhost
+keycloak-host: http://${hostname}/auth
 keycloak-realm: quiz
 oauth2-issuer: ${keycloak-host}/realms/${keycloak-realm}
 oauth2-client-id: quiz-admin
-oauth2-client-secret: change-me
-ui-external-uri: ${scheme}://localhost:8080/ui
+oauth2-client-secret: secret
+ui-external-uri: ${scheme}://${hostname}/ui
 
 server:
   port: 7084
@@ -22,9 +23,9 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: 30s
   datasource:
-    url: jdbc:postgresql://localhost:5432/quiz
+    url: jdbc:postgresql://${hostname}:5432/quiz
     username: quiz
-    password: change-me
+    password: secret
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -32,15 +33,6 @@ spring:
     show-sql: false
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
-  cloud:
-    openfeign:
-      client:
-        config:
-          quiz-admin:
-            url: ${keycloak-host}/admin/realms/${keycloak-realm}
-      oauth2:
-        enabled: true
-        clientRegistrationId: quiz-admin
   mail:
     host: smtp.gmail.com
     port: 587
@@ -64,9 +56,7 @@ spring:
             client-id: ${oauth2-client-id}
             client-secret: ${oauth2-client-secret}
             authorization-grant-type: client_credentials
-            scope:
-            - openid
-            - offline_access
+            scope: "openid"
 
 com:
   c4-soft:
@@ -84,6 +74,13 @@ com:
           - "/actuator/health/readiness"
           - "/actuator/health/liveness"
           - "/v3/api-docs/**"
+      rest:
+        client:
+          keycloak-admin-api:
+            base-url: ${keycloak-host}
+            authorization:
+              oauth2:
+                oauth2-registration-id: quiz-admin
         
 management:
   endpoint:

@@ -1,0 +1,11 @@
+{
+  "preferred_username": "vickette",
+  "realm_access": {
+    "roles": [
+        "trainer"
+  	]
+  },
+  "scope": "openid email",
+  "iss": "http://localhost/auth/realms/quiz",
+  "email": "vickette@c4-soft.com"
+}
