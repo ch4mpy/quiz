@@ -46,14 +46,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(path = "/skill-tests")
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "SkillTest")
-@Log4j2
+@Slf4j
 public class SkillTestController {
   private final SkillTestRepository testRepo;
   private final QuizRepository quizRepo;
@@ -82,9 +82,8 @@ public class SkillTestController {
 
   @GetMapping(path = "/{quizId}/{traineeName}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Transactional(readOnly = true)
-  @Operation(
-      description = "Returns a given trainee answers to a quiz, by default over the last 2"
-          + " weeks")
+  @Operation(description = "Returns a given trainee answers to a quiz, by default over the last 2"
+      + " weeks")
   public SkillTestResultDetailsDto getSkillTest(
       @PathVariable(value = "quizId", required = true) Long quizId,
       @PathVariable(value = "traineeName", required = true) String traineeName) {
@@ -146,7 +145,7 @@ public class SkillTestController {
         }
       }
     } catch (Exception e) {
-      log.error(e);
+      log.error(e.getMessage());
     }
 
     return ResponseEntity.accepted().location(URI.create(testUri)).body(toPreviewDto(saved));
