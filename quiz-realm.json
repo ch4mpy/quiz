@@ -757,7 +757,7 @@
       "client.secret.creation.time" : "1718395789",
       "backchannel.logout.session.required" : "true",
       "backchannel.logout.url" : "http://LOCALHOST_NAME/bff/logout/connect/back-channel/quiz-bff",
-      "post.logout.redirect.uris" : "+",
+      "post.logout.redirect.uris" : "http://127.0.0.1/ui/##https://127.0.0.1/ui/##http://localhost/ui/##https://localhost/ui/##http://LOCALHOST_NAME/ui/##https://LOCALHOST_NAME/ui/##http://host.docker.internal/ui/##https://host.docker.internal/ui/",
       "oauth2.device.authorization.grant.enabled" : "false",
       "display.on.consent.screen" : "false",
       "backchannel.logout.revoke.offline.tokens" : "true"

@@ -39,14 +39,14 @@ echo "**************************************************************************
 echo "sh ./mvnw -pl quiz-api spring-boot:build-image -DskipTests $MAVEN_PROFILE_ARG"
 echo "*****************************************************************************************************************************************"
 echo ""
-sh ./mvnw -pl quiz-api spring-boot:build-image -DskipTests $MAVEN_PROFILE_ARG
+sh ./mvnw spring-boot:build-image -DskipTests $MAVEN_PROFILE_ARG -pl quiz-api
 
 echo ""
 echo "*****************************************************************************************************************"
 echo "sh ./mvnw -pl bff spring-boot:build-image -DskipTests $MAVEN_PROFILE_ARG"
 echo "*****************************************************************************************************************"
 echo ""
-sh ./mvnw -pl bff spring-boot:build-image -DskipTests $MAVEN_PROFILE_ARG
+sh ./mvnw spring-boot:build-image -DskipTests $MAVEN_PROFILE_ARG -pl bff
 cd ..
 
 rm -f "compose-${host}.yml"

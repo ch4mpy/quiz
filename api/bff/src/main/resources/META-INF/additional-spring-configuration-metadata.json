@@ -35,9 +35,14 @@
     "description": "Keycloak 'realm'"
   },
   {
+    "name": "reverse-proxy-uri",
+    "type": "java.lang.String",
+    "description": "Base URI for the reverse-proxy"
+  },
+  {
     "name": "gateway-uri",
     "type": "java.lang.String",
-    "description": "Base URI for the gateway"
+    "description": "Base URI for the gateway (probably ${reverse-proxy-uri}/bff)"
   },
   {
     "name": "quiz-api-uri",

@@ -6,7 +6,8 @@ oauth2-issuer: ${keycloak-host}/realms/${keycloak-realm}
 oauth2-client-id: quiz-bff
 oauth2-client-secret: secret
 
-gateway-uri: ${scheme}://${hostname}:${server.port}
+reverse-proxy-uri: ${scheme}://${hostname}
+gateway-uri: ${reverse-proxy-uri}/bff
 quiz-api-uri: ${scheme}://${hostname}:7084
 
 server:
@@ -43,11 +44,11 @@ spring:
       - id: quiz-bff
         uri: ${quiz-api-uri}
         predicates:
-        - Path=/bff/v1/**
+        - Path=/v1/**
         filters:
         - TokenRelay=
         - SaveSession
-        - StripPrefix=2
+        - StripPrefix=1
       # Cert-manager http01 challenge for SSL certificates on K8s
       - id: letsencrypt
         uri: https://cert-manager-webhook
@@ -70,14 +71,16 @@ com:
           - /login/**
           - /oauth2/**
           - /logout/**
-          - /bff/**
+          - /v1/**
           permit-all:
           - /login/**
           - /oauth2/**
           - /logout/connect/back-channel/quiz-bff
-          - /bff/**
+          - /v1/**
           csrf: cookie-accessible-from-js
+          post-login-redirect-host: ${reverse-proxy-uri}
           post-login-redirect-path: /ui/
+          post-logout-redirect-host: ${reverse-proxy-uri}
           post-logout-redirect-path: /ui/
           oauth2-redirections:
             rp-initiated-logout: ACCEPTED

@@ -62,7 +62,7 @@ import { UserService } from './user.service';
 
 export function bffApiConfigFactory(): BffApiConfiguration {
   const config = new BffApiConfiguration({
-    basePath: '',
+    basePath: '/bff',
   });
   config.selectHeaderAccept(['application/json']);
   return config;

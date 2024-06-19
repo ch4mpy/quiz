@@ -47,7 +47,7 @@ export class UserService {
   }
 
   async logout() {
-    lastValueFrom(this.http.post('/logout', null, { observe: 'response' }))
+    lastValueFrom(this.http.post('/bff/logout', null, { observe: 'response' }))
       .then((resp) => {
         const logoutUri = resp.headers.get('Location');
         if (!!logoutUri) {
