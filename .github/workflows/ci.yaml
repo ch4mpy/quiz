@@ -37,7 +37,7 @@ jobs:
         run: |
           cd ./api
           ./mvnw clean install -Popenapi,h2
-          ./mvnw -pl quiz-api spring-boot:build-image -Pnative -DskipTests
+          ./mvnw -pl quiz-api spring-boot:build-image -DskipTests
           ./mvnw -pl bff spring-boot:build-image -Pnative -DskipTests
 
       - name: Set VERSION environment variable
