@@ -64,12 +64,17 @@ jobs:
           docker tag quiz-api:${{ env.VERSION }} ${{ secrets.DOCKERHUB_USERNAME }}/quiz-api
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/quiz-api
 
+      - name: Setup Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          
       - name: Build UI
         run: |
           cd ./angular-ui
-          npm install
+          npm ci
           npm run build
-          
+
       - name: Docker Build-Tag-Push Angular UI
         uses: docker/build-push-action@v4
         with:
