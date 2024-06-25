@@ -15,12 +15,13 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "baseHref": "/ui/",
-            "outputPath": "dist/quiz",
+            "outputPath": {
+              "base": "dist/quiz"
+            },
             "index": "projects/quiz/src/index.html",
-            "main": "projects/quiz/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -39,7 +40,8 @@
             ],
             "scripts": [
               "node_modules/quill/dist/quill.js"
-            ]
+            ],
+            "browser": "projects/quiz/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -58,9 +60,7 @@
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true

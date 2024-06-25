@@ -8,7 +8,7 @@ import {
   SkillTestApi,
   SkillTestResultPreviewDto,
 } from '@c4-soft/quiz-api';
-import * as moment from 'moment';
+import moment from 'moment';
 import { ConfirmationDialog } from './confirmation.dialog';
 import { ErrorDialog } from './error.dialog';
 import { UserService } from './user.service';

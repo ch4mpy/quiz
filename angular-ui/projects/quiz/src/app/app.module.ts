@@ -28,7 +28,7 @@ import {
   ApiModule as BffApiModule,
 } from '@c4-soft/bff-api';
 
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import {
@@ -76,69 +76,63 @@ export function quizApiConfigFactory(): QuizApiConfiguration {
   return config;
 }
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    ToolbarComponent,
-    QuizSelectionPage,
-    QuizCreationDialog,
-    ErrorDialog,
-    QuizDetailsPage,
-    QuestionCreationDialog,
-    ChoiceItemComponent,
-    QuestionExpansionPannelComponent,
-    ConfirmationDialog,
-    QuizRejectionDialog,
-    SkillTestSelectionPage,
-    SkillTestDetailsPage,
-    SkillTestResultDialog,
-    PrivacyPolicyPage,
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    BffApiModule.forRoot(bffApiConfigFactory),
-    QuizApiModule.forRoot(quizApiConfigFactory),
-    DragDropModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    MatDatepickerModule,
-    MatDialogModule,
-    MatExpansionModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatListModule,
-    MatMenuModule,
-    MatMomentDateModule,
-    MatProgressBarModule,
-    MatSelectModule,
-    MatToolbarModule,
-    MatTooltipModule,
-    QuillModule.forRoot(),
-  ],
-  providers: [
-    // FIXME: circular dependency
-    /*{
-      provide: HTTP_INTERCEPTORS,
-      useFactory: function (user: UserService) {
-        return new UnauthorizedInterceptor(user);
-      },
-      multi: true,
-      deps: [UserService],
-    },*/
-    provideRouter(routes, withComponentInputBinding()),
-    {
-      provide: DateAdapter,
-      useClass: MomentDateAdapter,
-      deps: [MAT_DATE_LOCALE],
-    },
-    { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
-  ],
-  bootstrap: [AppComponent],
-})
+@NgModule({ declarations: [
+        AppComponent,
+        ToolbarComponent,
+        QuizSelectionPage,
+        QuizCreationDialog,
+        ErrorDialog,
+        QuizDetailsPage,
+        QuestionCreationDialog,
+        ChoiceItemComponent,
+        QuestionExpansionPannelComponent,
+        ConfirmationDialog,
+        QuizRejectionDialog,
+        SkillTestSelectionPage,
+        SkillTestDetailsPage,
+        SkillTestResultDialog,
+        PrivacyPolicyPage,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        BffApiModule.forRoot(bffApiConfigFactory),
+        QuizApiModule.forRoot(quizApiConfigFactory),
+        DragDropModule,
+        MatButtonModule,
+        MatCheckboxModule,
+        MatDatepickerModule,
+        MatDialogModule,
+        MatExpansionModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatListModule,
+        MatMenuModule,
+        MatMomentDateModule,
+        MatProgressBarModule,
+        MatSelectModule,
+        MatToolbarModule,
+        MatTooltipModule,
+        QuillModule.forRoot()], providers: [
+        // FIXME: circular dependency
+        /*{
+          provide: HTTP_INTERCEPTORS,
+          useFactory: function (user: UserService) {
+            return new UnauthorizedInterceptor(user);
+          },
+          multi: true,
+          deps: [UserService],
+        },*/
+        provideRouter(routes, withComponentInputBinding()),
+        {
+            provide: DateAdapter,
+            useClass: MomentDateAdapter,
+            deps: [MAT_DATE_LOCALE],
+        },
+        { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule {}
