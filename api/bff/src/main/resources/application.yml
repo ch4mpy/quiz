@@ -118,7 +118,7 @@ logging:
     root: INFO
     org:
       springframework:
-        security: INFO
+        security: DEBUG
         boot: INFO
     
 ---
