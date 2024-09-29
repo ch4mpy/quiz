@@ -87,7 +87,7 @@ com:
           pkce-forced: true
           back-channel-logout:
             enabled: true
-            internal-logout-uri: ${scheme}://${hostname}:${serve.port}/logout
+            internal-logout-uri: ${gateway-uri}/logout/connect/back-channel/quiz-bff
         # OAuth2 resource server configuration
         resourceserver:
           permit-all:
