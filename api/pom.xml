@@ -27,7 +27,7 @@
 		
 		<openapi-generator-maven-plugin.version>7.8.0</openapi-generator-maven-plugin.version>
 		<swagger-annotations.version>2.2.24</swagger-annotations.version>
-		<springdoc-openapi.version>2.6.0</springdoc-openapi.version>
+		<springdoc-openapi.version>2.6.1-SNAPSHOT</springdoc-openapi.version>
 		<springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
 		<integration-tests.scheme>http</integration-tests.scheme>
 		<integration-tests.hostname>localhost</integration-tests.hostname>
@@ -291,6 +291,14 @@
 			<id>spring-snapshot</id>
 			<name>Spring Snapshots</name>
 			<url>https://repo.spring.io/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>ossrh-snapshot</id>
+			<name>OSSRH Snapshots</name>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
