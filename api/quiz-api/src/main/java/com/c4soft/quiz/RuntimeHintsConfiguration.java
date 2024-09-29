@@ -9,7 +9,10 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import com.c4soft.quiz.domain.Quiz_;
+import liquibase.changelog.FastCheckService;
 import liquibase.changelog.visitor.ValidatingVisitorGeneratorFactory;
 import liquibase.database.LiquibaseTableNamesFactory;
 import liquibase.report.ShowSummaryGeneratorFactory;
@@ -24,9 +27,9 @@ public class RuntimeHintsConfiguration {
 
   static class LiquibaseRuntimeHints implements RuntimeHintsRegistrar {
     @Override
-    public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+    public void registerHints(@NonNull RuntimeHints hints, @Nullable ClassLoader classLoader) {
       List.of(LoggerUIService.class, LiquibaseTableNamesFactory.class,
-          ShowSummaryGeneratorFactory.class, ValidatingVisitorGeneratorFactory.class)
+          ShowSummaryGeneratorFactory.class, FastCheckService.class, ValidatingVisitorGeneratorFactory.class)
           .forEach(clazz -> hints.reflection().registerType(clazz,
               MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_DECLARED_METHODS));
     }
@@ -36,7 +39,7 @@ public class RuntimeHintsConfiguration {
     private static final String METAMODEL_PACKAGE = Quiz_.class.getPackageName();
 
     @Override
-    public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+    public void registerHints(@NonNull RuntimeHints hints, @Nullable ClassLoader classLoader) {
       InputStream stream = ClassLoader.getSystemClassLoader()
           .getResourceAsStream((METAMODEL_PACKAGE.replaceAll("\\.", "/")));
       BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
