@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BFFApi, LoginOptionDto } from '@c4-soft/bff-api';
+import { BFFApi } from '@c4-soft/bff-api';
 import { UsersApi } from '@c4-soft/quiz-api';
+import { LoginOptionDto } from 'projects/c4-soft/bff-api/model/loginOptionDto';
 import { Subscription, interval } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Observable } from 'rxjs/internal/Observable';
