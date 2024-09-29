@@ -10,6 +10,7 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import com.c4soft.quiz.domain.Quiz_;
+import liquibase.changelog.visitor.ValidatingVisitorGeneratorFactory;
 import liquibase.database.LiquibaseTableNamesFactory;
 import liquibase.report.ShowSummaryGeneratorFactory;
 import liquibase.ui.LoggerUIService;
@@ -25,7 +26,7 @@ public class RuntimeHintsConfiguration {
     @Override
     public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
       List.of(LoggerUIService.class, LiquibaseTableNamesFactory.class,
-          ShowSummaryGeneratorFactory.class)
+          ShowSummaryGeneratorFactory.class, ValidatingVisitorGeneratorFactory.class)
           .forEach(clazz -> hints.reflection().registerType(clazz,
               MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_DECLARED_METHODS));
     }
