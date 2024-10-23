@@ -21,7 +21,8 @@ services:
     - start-dev
     - --import-realm
     ports:
-    - 8080:8080
+    - name: http
+      containerPort: 8080
     volumes:
       - ./keycloak/import/:/opt/keycloak/data/import/
     environment:
