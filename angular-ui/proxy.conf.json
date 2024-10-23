@@ -1,6 +1,6 @@
 {
     "/bff": {
-      "target": "http://desktop-ch4mp",
+      "target": "http://localhost",
       "secure": false
     }
   }
