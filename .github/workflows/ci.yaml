@@ -7,7 +7,7 @@ name: CI
 on: [push]
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -37,9 +37,18 @@ jobs:
         run: |
           cd ./api
           ./mvnw clean install -Popenapi,h2
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs: build
+    steps:
+      - name: Build Docker images with Maven
+        run: |
+          cd ./api
           ./mvnw spring-boot:build-image -DskipTests -Pnative -pl quiz-api
           ./mvnw spring-boot:build-image -DskipTests -Pnative -pl bff
-
       - name: Set VERSION environment variable
         run: |
           cd ./api

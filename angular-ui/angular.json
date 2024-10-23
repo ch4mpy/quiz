@@ -91,11 +91,11 @@
               "sslKey": "/Users/ch4mp/.ssh/mc-ch4mp.local_req_key.pem",
               "buildTarget": "quiz:build:development"
             },
-            "jw": {
+            "desktop-ch4mp": {
               "host": "0.0.0.0",
               "ssl": true,
-              "sslCert": "C:/Users/jwaco/.ssh/JW_self_signed.crt",
-              "sslKey": "C:/Users/jwaco/.ssh/JW_req_key.pem",
+              "sslCert": "C:/Users/ch4mpy/.ssh/desktop-ch4mp_self_signed.crt",
+              "sslKey": "C:/Users/ch4mpy/.ssh/desktop-ch4mp_req_key.pem",
               "buildTarget": "quiz:build:development"
             }
           },
