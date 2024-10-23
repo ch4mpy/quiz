@@ -1,0 +1,6 @@
+{
+    "/bff": {
+      "target": "http://LOCALHOST_NAME",
+      "secure": false
+    }
+  }

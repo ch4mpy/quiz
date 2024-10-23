@@ -25,7 +25,10 @@ else
     MAVEN_PROFILE_ARG=-P$(IFS=, ; echo "${MAVEN_PROFILES[*]}")
 fi
 
-host=$(echo $HOSTNAME  | tr '[A-Z]' '[a-z]')
+host=$(hostname)
+if [ -z "${host}" ]; then
+  host="localhost"
+fi
 
 cd api
 echo "************************************"
@@ -60,10 +63,13 @@ $SED "s/LOCALHOST_NAME/${host}/g" keycloak/import/quiz-realm.json
 rm "keycloak/import/quiz-realm.json''"
 
 cd angular-ui/
-rm src/app/app.config.ts
+rm proxy.conf.json src/app/app.config.ts
 cp ../angular-ui.app.config.ts src/app/app.config.ts
 $SED "s/LOCALHOST_NAME/${host}/g" src/app/app.config.ts
 rm "src/app/app.config.ts''"
+cp ../proxy.conf.json proxy.conf.json
+$SED "s/LOCALHOST_NAME/${host}/g" proxy.conf.json
+rm "proxy.conf.json''"
 npm i
 npm run build
 cd ..

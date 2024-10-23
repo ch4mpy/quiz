@@ -1,14 +1,14 @@
 scheme: http
 hostname: localhost
-keycloak-host: http://${hostname}/auth
+keycloak-host: ${scheme}://${hostname}/auth
 keycloak-realm: quiz
 oauth2-issuer: ${keycloak-host}/realms/${keycloak-realm}
 oauth2-client-id: quiz-bff
 oauth2-client-secret: secret
 
 reverse-proxy-uri: ${scheme}://${hostname}
-gateway-uri: ${reverse-proxy-uri}/bff
-quiz-api-uri: ${scheme}://${hostname}:7084
+gateway-public-uri: ${reverse-proxy-uri}/bff
+quiz-api-internal-uri: ${scheme}://${hostname}:7084
 
 server:
   port: 7080
@@ -42,7 +42,7 @@ spring:
       - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Request-Method Access-Control-Request-Headers
       routes:
       - id: quiz-bff
-        uri: ${quiz-api-uri}
+        uri: ${quiz-api-internal-uri}
         predicates:
         - Path=/v1/**
         filters:
@@ -66,7 +66,7 @@ com:
           authorities:
           - path: $.realm_access.roles
         client:
-          client-uri: ${gateway-uri}
+          client-uri: ${gateway-public-uri}
           security-matchers:
           - /login/**
           - /oauth2/**
@@ -84,10 +84,11 @@ com:
           post-logout-redirect-path: /ui/
           oauth2-redirections:
             rp-initiated-logout: ACCEPTED
-          pkce-forced: true
+            authentication-entry-point: UNAUTHORIZED
+            pre-authorization-code: FOUND
           back-channel-logout:
             enabled: true
-            internal-logout-uri: ${gateway-uri}/logout/connect/back-channel/quiz-bff
+            internal-logout-uri: ${gateway-public-uri}/logout/connect/back-channel/quiz-bff
         # OAuth2 resource server configuration
         resourceserver:
           permit-all:
@@ -118,7 +119,7 @@ logging:
     root: INFO
     org:
       springframework:
-        security: INFO
+        security: DEBUG
         boot: INFO
     
 ---

@@ -1,11 +1,11 @@
 scheme: http
 hostname: localhost
-keycloak-host: http://${hostname}/auth
+keycloak-host: ${scheme}://${hostname}/auth
 keycloak-realm: quiz
 oauth2-issuer: ${keycloak-host}/realms/${keycloak-realm}
 oauth2-client-id: quiz-admin
 oauth2-client-secret: secret
-ui-external-uri: ${scheme}://${hostname}/ui
+ui-external-uri: ${scheme}://${hostname}/ui/
 
 server:
   port: 7084
@@ -101,7 +101,7 @@ logging:
   level:
     org:
       springframework:
-        security: INFO
+        security: DEBUG
 
 ---
 spring:

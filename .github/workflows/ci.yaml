@@ -7,7 +7,7 @@ name: CI
 on: [push]
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -37,13 +37,34 @@ jobs:
         run: |
           cd ./api
           ./mvnw clean install -Popenapi,h2
-          ./mvnw spring-boot:build-image -DskipTests -Pnative -pl quiz-api
-          ./mvnw spring-boot:build-image -DskipTests -Pnative -pl bff
+      
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Set up JDK 22
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '22'
+          cache: 'maven'
 
-      - name: Set VERSION environment variable
-        run: |
-          cd ./api
-          echo "VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+      - uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Make Maven Wrapper executable
+        if: contains(matrix.os, 'win') == false
+        run: chmod +x ./api/mvnw
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -53,6 +74,19 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+
+      - name: Build Docker images with Maven
+        run: |
+          cd ./api
+          ./mvnw clean install -Popenapi,h2
+          ./mvnw spring-boot:build-image -DskipTests -Pnative -pl quiz-api
+          ./mvnw spring-boot:build-image -DskipTests -Pnative -pl bff
+
+      - name: Set VERSION environment variable
+        run: |
+          cd ./api
+          echo "VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
       - name: Docker Tag-Push gateway ${{ env.VERSION }}
         run: |
