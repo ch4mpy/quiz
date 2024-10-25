@@ -3,11 +3,10 @@ import { Injectable } from '@angular/core';
 import { BFFApi } from '@c4-soft/bff-api';
 import { UsersApi } from '@c4-soft/quiz-api';
 import { LoginOptionDto } from 'projects/c4-soft/bff-api/model/loginOptionDto';
-import { interval, Subscription } from 'rxjs';
+import { finalize, interval, Subscription } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Observable } from 'rxjs/internal/Observable';
-import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import { webSocket } from 'rxjs/webSocket';
 
 @Injectable({
   providedIn: 'root',
@@ -65,16 +64,19 @@ export class UserService {
       });
   }
 
-  async logout() {
-    lastValueFrom(this.http.post('/bff/logout', null, { observe: 'response' }))
-      .then((resp) => {
+  logout() {
+    this.http
+      .post('/bff/logout', null, { observe: 'response' })
+      .pipe(
+        finalize(() => {
+          this.user$.next(User.ANONYMOUS);
+        })
+      )
+      .subscribe((resp) => {
         const logoutUri = resp.headers.get('Location');
         if (!!logoutUri) {
           window.location.href = logoutUri;
         }
-      })
-      .finally(() => {
-        this.user$.next(User.ANONYMOUS);
       });
   }
 
