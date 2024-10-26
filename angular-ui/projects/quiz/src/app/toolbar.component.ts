@@ -27,7 +27,7 @@ import { CommonModule } from '@angular/common';
       >
         <mat-icon>menu</mat-icon>
       </button>
-      <span>Quiz by ch4mpy</span>
+      <span>Qu!z by ch4mpy</span>
       <span class="spacer"></span>
       <span>{{ title }}</span>
       <span class="spacer"></span>

@@ -3,15 +3,20 @@ import 'package:provider/provider.dart';
 import 'package:quiz/main.dart';
 import 'package:quiz/user_chip.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  var isTabbarVisible = false;
 
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<QuizAppState>();
     final user = appState.user;
-
-    final theme = Theme.of(context);
 
     final tabs = [
       const Tab(
@@ -24,14 +29,24 @@ class MainPage extends StatelessWidget {
       ));
     }
 
+    final theme = Theme.of(context);
+
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Quiz"),
+          title: const Text("Qu!z"),
           backgroundColor: theme.colorScheme.primary,
           foregroundColor: theme.colorScheme.onPrimary,
           actions: [
+            if (tabs.length > 1)
+              IconButton(
+                icon: const Icon(
+                  Icons.menu_sharp,
+                  semanticLabel: "display tabs",
+                ),
+                onPressed: toggleTabbar,
+              ),
             user.isAuthenticated()
                 ? UserChip(user: user, appState: appState)
                 : IconButton(
@@ -41,24 +56,26 @@ class MainPage extends StatelessWidget {
                       semanticLabel: "login",
                     )),
           ],
-          bottom: TabBar(tabs: tabs, labelColor: theme.colorScheme.onPrimary),
+          bottom: isTabbarVisible
+              ? TabBar(tabs: tabs, labelColor: theme.colorScheme.onPrimary)
+              : null,
         ),
-        body: Column(
-          children: [
-            SafeArea(
-              child: Center(
-                child: Column(children: [
-                  if (user.isAuthenticated()) ...[
-                    if (user.isTrainer()) const Text("You are a trainer"),
-                    if (user.isModerator()) const Text("You are a moderator"),
-                  ] else
-                    const Text("You are not logged in"),
-                ]),
-              ),
-            )
-          ],
+        body: Center(
+          child: Column(children: [
+            if (user.isAuthenticated()) ...[
+              if (user.isTrainer()) const Text("You are a trainer"),
+              if (user.isModerator()) const Text("You are a moderator"),
+            ] else
+              const Text("You are not logged in"),
+          ]),
         ),
       ),
     );
+  }
+
+  toggleTabbar() {
+    setState(() {
+      isTabbarVisible = !isTabbarVisible;
+    });
   }
 }

@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
   ],
   template: `<app-toolbar title="Privacy Policy"></app-toolbar>
     <div class="page-body">
-      <h1>C4 - Quiz Privacy Policy</h1>
+      <h1>Qu!z Privacy Policy</h1>
       <p>Our Privacy Policy was last updated on the 10th of October 2023.</p>
       <p>
         This Privacy Policy describes Our policies and procedures on the
