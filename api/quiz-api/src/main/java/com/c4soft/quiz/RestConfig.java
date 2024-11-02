@@ -12,5 +12,4 @@ public class RestConfig {
   UsersApi usersApi(RestClient keycloakAdminClient) throws Exception {
     return new RestClientHttpExchangeProxyFactoryBean<>(UsersApi.class, keycloakAdminClient).getObject();
   }
-
 }
