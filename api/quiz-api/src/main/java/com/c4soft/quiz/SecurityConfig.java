@@ -9,6 +9,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import com.c4_soft.springaddons.security.oidc.OpenidClaimSet;
+import com.c4_soft.springaddons.security.oidc.OpenidToken;
 import com.c4_soft.springaddons.security.oidc.starter.OpenidProviderPropertiesResolver;
 import com.c4_soft.springaddons.security.oidc.starter.properties.NotAConfiguredOpenidProviderException;
 import com.c4_soft.springaddons.security.oidc.starter.synchronised.resourceserver.JwtAbstractAuthenticationTokenConverter;
@@ -25,8 +26,8 @@ public class SecurityConfig {
       final var opProperties = addonsPropertiesResolver.resolve(jwt.getClaims())
           .orElseThrow(() -> new NotAConfiguredOpenidProviderException(jwt.getClaims()));
       final var claims = new OpenidClaimSet(jwt.getClaims(), opProperties.getUsernameClaim());
-      return new QuizAuthentication(claims, authoritiesConverter.convert(claims),
-          jwt.getTokenValue());
+      final var token = new OpenidToken(claims, jwt.getTokenValue());
+      return new QuizAuthentication(token, authoritiesConverter.convert(claims));
     };
   }
 }

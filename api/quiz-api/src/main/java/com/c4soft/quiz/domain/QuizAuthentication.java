@@ -5,11 +5,11 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
 import com.c4_soft.springaddons.security.oidc.OAuthentication;
-import com.c4_soft.springaddons.security.oidc.OpenidClaimSet;
+import com.c4_soft.springaddons.security.oidc.OpenidToken;
 import lombok.Getter;
 
 @Getter
-public class QuizAuthentication extends OAuthentication<OpenidClaimSet> {
+public class QuizAuthentication extends OAuthentication<OpenidToken> {
   private static final long serialVersionUID = 1L;
   public static final String AUTHORITY_MODERATOR = "moderator";
   public static final String AUTHORITY_TRAINER = "trainer";
@@ -21,9 +21,9 @@ public class QuizAuthentication extends OAuthentication<OpenidClaimSet> {
   private final boolean isModerator;
   private final boolean isTrainer;
 
-  public QuizAuthentication(OpenidClaimSet claims,
-      Collection<? extends GrantedAuthority> authorities, String tokenString) {
-    super(claims, authorities, tokenString);
+  public QuizAuthentication(OpenidToken token,
+      Collection<? extends GrantedAuthority> authorities) {
+    super(token, authorities);
     final var authoritiesStrings =
         authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
     this.isModerator = authoritiesStrings.contains(AUTHORITY_MODERATOR);

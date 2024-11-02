@@ -76,7 +76,7 @@ com:
           - "/v3/api-docs/**"
       rest:
         client:
-          keycloak-admin-api:
+          keycloak-admin-client:
             base-url: ${keycloak-host}
             authorization:
               oauth2:
