@@ -7,6 +7,7 @@ import { interval, Subscription } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Observable } from 'rxjs/internal/Observable';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,7 @@ import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 export class UserService {
   private user$ = new BehaviorSubject<User>(User.ANONYMOUS);
   private refreshSub?: Subscription;
+  private subject = webSocket('ws://mc-ch4mp.local/bff/user/whoami');
 
   constructor(
     private bffApi: BFFApi,
