@@ -1,6 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  Router,
+} from '@angular/router';
 import { BFFApi } from '@c4-soft/bff-api';
 import { UsersApi } from '@c4-soft/quiz-api';
 import { LoginOptionDto } from 'projects/c4-soft/bff-api/model/loginOptionDto';
@@ -8,6 +12,7 @@ import { Subscription, interval } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Observable } from 'rxjs/internal/Observable';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 @Injectable({
   providedIn: 'root',
@@ -15,12 +20,13 @@ import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 export class UserService {
   private user$ = new BehaviorSubject<User>(User.ANONYMOUS);
   private refreshSub?: Subscription;
+  private subject = webSocket('ws://mc-ch4mp.local/bff/user/whoami');
 
   constructor(
     private bffApi: BFFApi,
     private usersApi: UsersApi,
     private http: HttpClient,
-    private router: Router,
+    private router: Router
   ) {
     this.refresh();
   }
@@ -35,6 +41,11 @@ export class UserService {
             : User.ANONYMOUS
         );
         if (!!user.username) {
+          this.subject.subscribe({
+            next: (msg) => console.log('message received: ' + msg), // Called whenever there is a message from the server.
+            error: (err) => console.log(err), // Called if at any point WebSocket API signals some kind of error.
+            complete: () => console.log('complete'), // Called when connection is closed (for whatever reason).
+          });
           const now = Date.now();
           const delay = (1000 * user.exp - now) * 0.8;
           if (delay > 2000) {
