@@ -83,9 +83,9 @@ com:
           post-logout-redirect-host: ${reverse-proxy-uri}
           post-logout-redirect-path: /ui/
           oauth2-redirections:
-            rp-initiated-logout: ACCEPTED
             authentication-entry-point: UNAUTHORIZED
-            pre-authorization-code: FOUND
+            pre-authorization-code: OK
+            rp-initiated-logout: ACCEPTED
           back-channel-logout:
             enabled: true
             internal-logout-uri: ${gateway-public-uri}/logout/connect/back-channel/quiz-bff

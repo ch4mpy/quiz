@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { BFFApi } from '@c4-soft/bff-api';
 import { UsersApi } from '@c4-soft/quiz-api';
 import { LoginOptionDto } from 'projects/c4-soft/bff-api/model/loginOptionDto';
@@ -15,7 +16,12 @@ export class UserService {
   private user$ = new BehaviorSubject<User>(User.ANONYMOUS);
   private refreshSub?: Subscription;
 
-  constructor(private bffApi: BFFApi, private usersApi: UsersApi, private http: HttpClient) {
+  constructor(
+    private bffApi: BFFApi,
+    private usersApi: UsersApi,
+    private http: HttpClient,
+    private router: Router,
+  ) {
     this.refresh();
   }
 
@@ -44,7 +50,22 @@ export class UserService {
   }
 
   login(loginUri: string) {
-    window.location.href = loginUri;
+    const currentRoute = location.toString();
+    this.http
+      .get(loginUri, {
+        headers: {
+          'X-RESPONSE-STATUS': '200',
+          'X-POST-LOGIN-SUCCESS-URI': currentRoute,
+          'X-POST-LOGIN-FAILURE-URI': currentRoute,
+        },
+        observe: 'response',
+      })
+      .subscribe((resp) => {
+        const location = resp.headers.get('Location');
+        if (!!location) {
+          window.location.href = location;
+        }
+      });
   }
 
   async logout() {
