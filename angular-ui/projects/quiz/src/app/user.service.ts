@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { BFFApi } from '@c4-soft/bff-api';
 import { UsersApi } from '@c4-soft/quiz-api';
 import { LoginOptionDto } from 'projects/c4-soft/bff-api/model/loginOptionDto';
-import { Subscription, interval } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Observable } from 'rxjs/internal/Observable';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
@@ -35,11 +35,8 @@ export class UserService {
             : User.ANONYMOUS
         );
         if (!!user.username) {
-          const now = Date.now();
-          const delay = (1000 * user.exp - now) * 0.8;
-          if (delay > 2000) {
-            this.refreshSub = interval(delay).subscribe(() => this.refresh());
-          }
+          const delay = 3000;
+          this.refreshSub = interval(delay).subscribe(() => this.refresh());
         }
       },
       error: (error) => {
