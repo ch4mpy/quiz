@@ -1,6 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { BFFApi } from '@c4-soft/bff-api';
 import { UserService } from './user.service';
 
@@ -58,12 +56,7 @@ export class ToolbarComponent {
   @Input()
   title!: string;
 
-  constructor(
-    private user: UserService,
-    private bff: BFFApi,
-    private dialog: MatDialog,
-    private router: Router
-  ) {}
+  constructor(private user: UserService, private bff: BFFApi) {}
 
   get currentUser() {
     return this.user.current;
