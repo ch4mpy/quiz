@@ -8,9 +8,22 @@ import {
   SkillTestResultDetailsDto,
 } from '@c4-soft/quiz-api';
 import { ErrorDialog } from './error.dialog';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { ToolbarComponent } from './toolbar.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-skill-test-details',
+  imports: [
+    CommonModule,
+    MatCheckboxModule,
+    MatIconModule,
+    MatProgressBarModule,
+    ToolbarComponent,
+  ],
   template: `<app-toolbar [title]="title"></app-toolbar>
     <div class="page-body">
       <div style="height: 1em;">

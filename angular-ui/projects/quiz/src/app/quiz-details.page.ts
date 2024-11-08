@@ -1,6 +1,6 @@
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -16,9 +16,33 @@ import { QuestionCreationDialog } from './question-creation.dialog';
 import { QuizRejectionDialog } from './quiz-rejection.dialog';
 import { SkillTestResultDialog } from './skill-test-result.dialog';
 import { UserService } from './user.service';
+import { ToolbarComponent } from './toolbar.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { QuestionExpansionPannelComponent } from './question-expansion-pannel.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-quiz',
+  imports: [
+    CommonModule,
+    DragDropModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressBarModule,
+    QuestionExpansionPannelComponent,
+    ToolbarComponent,
+  ],
   template: `<app-toolbar [title]="quiz?.title || ''"></app-toolbar>
     <div class="page-body">
       <div style="height: 1em;">
@@ -591,6 +615,21 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
         this.isLoading = false;
         this.dialog.open(ErrorDialog, { data: { error } });
       },
+    });
+  }
+
+  protected downloadQuiz() {
+    const blob = this.toJsonBlob(this.quiz);
+    const linkElement = document.createElement('a');
+    linkElement.href = URL.createObjectURL(blob);
+    linkElement.download = `${this.quiz?.title || 'quiz'}.json`;
+    linkElement.click();
+    window.URL.revokeObjectURL(linkElement.href);
+  }
+
+  private toJsonBlob(data: unknown): Blob {
+    return new Blob([JSON.stringify(data)], {
+      type: 'application/json',
     });
   }
 }

@@ -1,7 +1,14 @@
 import { Component } from '@angular/core';
+import { ToolbarComponent } from './toolbar.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-privacy-policy',
+  imports: [
+    CommonModule,
+    ToolbarComponent,
+  ],
   template: `<app-toolbar title="Privacy Policy"></app-toolbar>
     <div class="page-body">
       <h1>C4 - Quiz Privacy Policy</h1>

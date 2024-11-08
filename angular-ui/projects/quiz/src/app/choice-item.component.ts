@@ -6,13 +6,19 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ChoiceDto, ChoiceUpdateDto, QuizzesApi } from '@c4-soft/quiz-api';
 import { Observable, Subscription, debounceTime } from 'rxjs';
 import { ConfirmationDialog } from './confirmation.dialog';
 import { ErrorDialog } from './error.dialog';
 import { UserService } from './user.service';
+import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
 
 export interface ChoiceEvent {
   choiceId: number;
@@ -20,7 +26,17 @@ export interface ChoiceEvent {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-choice-item',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatCheckboxModule,
+  ],
   template: `<div style="height: 4em; width: 100%; display: flex;">
     <span style="width: 100%; margin-right: 4em;">
       <form [formGroup]="form">

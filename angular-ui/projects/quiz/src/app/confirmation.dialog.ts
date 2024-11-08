@@ -1,12 +1,22 @@
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 export interface ConfirmationDialogData {
   message: string;
 }
 
 @Component({
+  standalone: true,
   selector: 'app-confirmation',
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatToolbarModule,
+  ],
   template: `<mat-toolbar color="primary">
       <span>Confirmation</span>
     </mat-toolbar>

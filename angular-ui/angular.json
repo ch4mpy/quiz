@@ -23,7 +23,6 @@
             },
             "index": "projects/quiz/src/index.html",
             "polyfills": [
-              "zone.js"
             ],
             "tsConfig": "projects/quiz/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -112,8 +111,6 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "polyfills": [
-              "zone.js",
-              "zone.js/testing"
             ],
             "tsConfig": "projects/quiz/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
@@ -156,8 +153,6 @@
           "options": {
             "tsConfig": "projects/c4-soft/quiz-api/tsconfig.spec.json",
             "polyfills": [
-              "zone.js",
-              "zone.js/testing"
             ]
           }
         }
@@ -189,8 +184,6 @@
           "options": {
             "tsConfig": "projects/c4-soft/bff-api/tsconfig.spec.json",
             "polyfills": [
-              "zone.js",
-              "zone.js/testing"
             ]
           }
         }

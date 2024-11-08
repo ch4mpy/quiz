@@ -1,15 +1,36 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { QuizDto, QuizzesApi } from '@c4-soft/quiz-api';
 import { ConfirmationDialog } from './confirmation.dialog';
 import { ErrorDialog } from './error.dialog';
 import { QuizCreationDialog } from './quiz-creation.dialog';
 import { UserService } from './user.service';
+import { ToolbarComponent } from './toolbar.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-quiz-selection',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatProgressBarModule,
+    ToolbarComponent,
+  ],
   template: `<app-toolbar title="Quizzes"></app-toolbar>
     <div class="page-body">
       <div style="display: flex;">

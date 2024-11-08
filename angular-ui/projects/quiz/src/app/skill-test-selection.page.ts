@@ -1,6 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
 import {
   QuizDto,
@@ -11,10 +24,27 @@ import {
 import moment from 'moment';
 import { ConfirmationDialog } from './confirmation.dialog';
 import { ErrorDialog } from './error.dialog';
+import { ToolbarComponent } from './toolbar.component';
 import { UserService } from './user.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-skill-test-selection',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatProgressBarModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    ToolbarComponent,
+  ],
   template: `<app-toolbar title="Skill Tests"></app-toolbar>
     <div class="page-body">
       <div style="height: 1em;">

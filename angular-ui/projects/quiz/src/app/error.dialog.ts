@@ -1,12 +1,21 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ToolbarComponent } from './toolbar.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { CommonModule } from '@angular/common';
 
 export interface ErrorDialogData {
   error: any;
 }
 
 @Component({
+  standalone: true,
   selector: 'app-error',
+  imports: [
+    CommonModule,
+    MatToolbarModule,
+    ToolbarComponent,
+  ],
   template: `<mat-toolbar color="warn">
       <span>{{ title }}</span>
     </mat-toolbar>

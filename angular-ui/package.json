@@ -4,7 +4,7 @@
   "scripts": {
     "postinstall": "npm run bff-api && npm run quiz-api",
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve -c development",
     "build": "ng build quiz",
     "api": "npm run bff-api && npm run quiz-api",
     "bff-api:generate": "npx openapi-generator-cli generate -i ./bff.openapi.json -g typescript-angular --type-mappings AnyType=any --additional-properties=serviceSuffix=Api,npmName=@c4-soft/bff-api,npmVersion=0.0.1,stringEnums=true,enumPropertyNaming=camelCase,supportsES6=true,withInterfaces=true --remove-operation-id-prefix -o projects/c4-soft/bff-api",
@@ -19,20 +19,19 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^18.2.11",
-    "@angular/cdk": "^18.0.4",
+    "@angular/cdk": "^18.2.12",
     "@angular/common": "^18.2.11",
     "@angular/compiler": "^18.2.11",
     "@angular/core": "^18.2.11",
     "@angular/forms": "^18.2.11",
-    "@angular/material": "^18.0.4",
-    "@angular/material-moment-adapter": "^18.0.4",
+    "@angular/material": "^18.2.12",
+    "@angular/material-moment-adapter": "^18.2.12",
     "@angular/platform-browser": "^18.2.11",
     "@angular/platform-browser-dynamic": "^18.2.11",
     "@angular/router": "^18.2.11",
     "ngx-quill": "^26.0.4",
     "rxjs": "~7.8.0",
-    "tslib": "^2.6.3",
-    "zone.js": "~0.14.10"
+    "tslib": "^2.6.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^18.2.11",

@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { BFFApi } from '@c4-soft/bff-api';
 import { UsersApi } from '@c4-soft/quiz-api';
 import { LoginOptionDto } from 'projects/c4-soft/bff-api/model/loginOptionDto';
@@ -19,8 +18,7 @@ export class UserService {
   constructor(
     private bffApi: BFFApi,
     private usersApi: UsersApi,
-    private http: HttpClient,
-    private router: Router,
+    private http: HttpClient
   ) {
     this.refresh();
   }

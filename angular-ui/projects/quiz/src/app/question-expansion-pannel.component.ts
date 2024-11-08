@@ -1,3 +1,5 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CommonModule } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -6,9 +8,17 @@ import {
   Output,
   SecurityContext,
 } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { MatExpansionPanel } from '@angular/material/expansion';
+import {
+  MatExpansionModule,
+  MatExpansionPanel,
+} from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
 import { DomSanitizer } from '@angular/platform-browser';
 import {
   ChoiceDto,
@@ -16,14 +26,29 @@ import {
   QuizzesApi,
   SkillTestDto,
 } from '@c4-soft/quiz-api';
-import { QuillModules } from 'ngx-quill';
+import { QuillModule, QuillModules } from 'ngx-quill';
 import { BehaviorSubject, Observable, debounceTime } from 'rxjs';
+import { ChoiceItemComponent } from './choice-item.component';
 import { ConfirmationDialog } from './confirmation.dialog';
 import { ErrorDialog } from './error.dialog';
 import { UserService } from './user.service';
 
 @Component({
+  standalone: true,
   selector: 'app-question-expansion-pannel',
+  imports: [
+    CommonModule,
+    DragDropModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    QuillModule,
+    ChoiceItemComponent,
+  ],
   template: ` <mat-expansion-panel
     [expanded]="expanded"
     (opened)="opened.emit()"
