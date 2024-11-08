@@ -16,6 +16,9 @@ server:
     enabled: false
 
 spring:
+  application:
+    name: "@project.artifactId@"
+    version: "@project.version@"
   config:
     import:
     - optional:configtree:/workspace/config/

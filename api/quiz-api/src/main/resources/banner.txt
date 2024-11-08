@@ -10,5 +10,5 @@ ${AnsiColor.BLUE} | |  | |_   _ _ ____ | |__) | |__  | (___    | |       /  \  |
 ${AnsiColor.BLUE} | |  | | | | | |_  / |  _  /|  __|  \___ \   | |      / /\ \ |  ___/ | |  
 ${AnsiColor.BLUE} | |__| | |_| | |/ /  | | \ \| |____ ____) |  | |     / ____ \| |    _| |_ 
 ${AnsiColor.BLUE}  \___\_\\__,_|_/___| |_|  \_\______|_____/   |_|    /_/    \_\_|   |_____|
-${AnsiColor.RED}Spring Boot ${spring-boot.formatted-version}
+${AnsiColor.RED}${application.version} (Spring Boot ${spring-boot.version})
 ${AnsiColor.BLACK}

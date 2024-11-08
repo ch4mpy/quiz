@@ -16,12 +16,37 @@ server:
     enabled: false
 
 spring:
+  application:
+    name: "@project.artifactId@"
+    version: "@project.version@"
+  cloud:
+    gateway:
+      mvc:
+        routes:
+        - id: quiz-bff
+          uri: ${quiz-api-internal-uri}
+          predicates:
+          - Path=/v1/**
+          filters:
+          - TokenRelay=
+          - StripPrefix=1
+          - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Request-Method Access-Control-Request-Headers
+        # Cert-manager http01 challenge for SSL certificates on K8s
+        - id: letsencrypt
+          uri: https://cert-manager-webhook
+          predicates:
+          - Path=/.well-known/acme-challenge/**
   config:
     import:
     - optional:configtree:/workspace/config/
     - optional:configtree:/workspace/secret/
   lifecycle:
     timeout-per-shutdown-phase: 30s
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: quiz-bff
+    password: secret
   security:
     oauth2:
       client:
@@ -36,24 +61,6 @@ spring:
             client-secret: ${oauth2-client-secret}
             authorization-grant-type: authorization_code
             scope: openid, profile, email, offline_access
-  cloud:
-    gateway:
-      default-filters:
-      - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Request-Method Access-Control-Request-Headers
-      routes:
-      - id: quiz-bff
-        uri: ${quiz-api-internal-uri}
-        predicates:
-        - Path=/v1/**
-        filters:
-        - TokenRelay=
-        - SaveSession
-        - StripPrefix=1
-      # Cert-manager http01 challenge for SSL certificates on K8s
-      - id: letsencrypt
-        uri: https://cert-manager-webhook
-        predicates:
-        - Path=/.well-known/acme-challenge/**
 
 com:
   c4-soft:
@@ -72,11 +79,13 @@ com:
           - /oauth2/**
           - /logout/**
           - /v1/**
+          - /ws/**
           permit-all:
           - /login/**
           - /oauth2/**
           - /logout/connect/back-channel/quiz-bff
           - /v1/**
+          - /ws/**
           csrf: cookie-accessible-from-js
           post-login-redirect-host: ${reverse-proxy-uri}
           post-login-redirect-path: /ui/
