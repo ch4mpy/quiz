@@ -1,50 +1,51 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Router } from '@angular/router';
 import { QuizDto, QuizzesApi } from '@c4-soft/quiz-api';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  mergeMap,
+  Observable,
+  tap,
+} from 'rxjs';
 import { ConfirmationDialog } from './confirmation.dialog';
 import { ErrorDialog } from './error.dialog';
 import { QuizCreationDialog } from './quiz-creation.dialog';
-import { UserService } from './user.service';
+import { QuizListComponent } from './quiz-list.component';
+import {
+  QuizzesFilterCriteria,
+  QuizzesFilterFormComponent,
+} from './quizzes-filter-form.component';
 import { ToolbarComponent } from './toolbar.component';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { CommonModule } from '@angular/common';
+import { UserService } from './user.service';
 
 @Component({
   standalone: true,
   selector: 'app-quiz-selection',
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     MatButtonModule,
     MatDialogModule,
-    MatFormFieldModule,
     MatIconModule,
-    MatInputModule,
-    MatListModule,
     MatProgressBarModule,
+    QuizzesFilterFormComponent,
+    QuizListComponent,
     ToolbarComponent,
   ],
   template: `<app-toolbar title="Quizzes"></app-toolbar>
     <div class="page-body">
       <div style="display: flex;">
         <div class="spacer"></div>
-        <div [formGroup]="quizFilterForm">
-          <mat-form-field style="margin: 1em;">
-            <mat-label>Title</mat-label>
-            <input matInput formControlName="title" />
-          </mat-form-field>
-          <mat-form-field style="margin: 1em;">
-            <mat-label>Author</mat-label>
-            <input matInput formControlName="author" />
-          </mat-form-field>
-        </div>
+        <app-quizzes-filter-form
+          [value]="(searchCriteria$ | async) || {}"
+          (valueChanges)="searchCriteria$.next($event)"
+        />
         <div class="spacer"></div>
         <button
           *ngIf="isAuthor"
@@ -59,113 +60,52 @@ import { CommonModule } from '@angular/common';
         </button>
       </div>
       <div style="height: 1em;">
-        <mat-progress-bar
-          *ngIf="isLoading"
-          mode="indeterminate"
-        ></mat-progress-bar>
+        @if(isLoading()) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
       </div>
-      <mat-list>
-        <mat-list-item *ngFor="let quiz of quizzes" style="width: 100%;">
-          <span matListItemLine style="display: inline-flex; width: 100%;">
-            <button
-              mat-flat-button
-              (click)="
-                openQuizDetails(quiz.id, !quiz.isPublished && !quiz.isReplaced)
-              "
-              style="display: block; width: 90%; margin: 1em;"
-            >
-              <span style="display: inline-flex; width: 100%;">
-                <span>{{ quiz.title }}</span>
-                <span class="spacer"></span>
-
-                <span>{{ quiz.authorName }}</span>
-                <span style="width: 2em;">
-                  <mat-icon
-                    *ngIf="
-                      !quiz.isPublished && !quiz.isSubmitted && !quiz.isReplaced
-                    "
-                    matTooltip="Draft"
-                    >pending</mat-icon
-                  >
-                  <mat-icon
-                    *ngIf="
-                      !quiz.isPublished && !quiz.isSubmitted && quiz.isReplaced
-                    "
-                    matTooltip="Repalced"
-                    >visibility_off</mat-icon
-                  >
-                  <mat-icon
-                    *ngIf="!quiz.isPublished && quiz.isSubmitted"
-                    matTooltip="Waiting for moderation"
-                    >hourglass_empty</mat-icon
-                  >
-                </span>
-                <span matListItemMeta style="width: 2em;">{{
-                  quiz.questions.length
-                }}</span>
-              </span>
-            </button>
-            <button
-              *ngIf="canDelete(quiz)"
-              (click)="deleteQuiz(quiz.id)"
-              matListItemMeta
-              mat-mini-fab
-              color="warn"
-              aria-label="Delete quiz"
-              matTooltip="Delete quiz"
-              class="item-mini-button"
-            >
-              <mat-icon>delete</mat-icon>
-            </button>
-          </span>
-        </mat-list-item>
-      </mat-list>
+      <app-quiz-list
+        [value]="(quizzes$ | async) || []"
+        (selectQuiz)="
+          openQuizDetails($event.id, !$event.isPublished && !$event.isReplaced)
+        "
+        (deleteQuiz)="deleteQuiz($event.id)"
+      />
     </div>`,
   styles: [],
 })
-export class QuizSelectionPage implements OnInit {
-  quizzes: QuizDto[] = [];
-  isLoading = true;
-  quizFilterForm = new FormGroup({
-    author: new FormControl<string>(''),
-    title: new FormControl<string>(''),
-  });
+export class QuizSelectionPage {
+  protected isLoading = signal(false);
+
+  protected readonly searchCriteria$ =
+    new BehaviorSubject<QuizzesFilterCriteria>({});
+  private readonly forceUpdate$ = new BehaviorSubject<void>(undefined);
+  protected readonly quizzes$: Observable<QuizDto[]>;
 
   constructor(
     private quizApi: QuizzesApi,
     private dialog: MatDialog,
     private router: Router,
     private user: UserService
-  ) {}
-
-  ngOnInit(): void {
-    this.quizFilterForm.valueChanges.subscribe(() => {
-      this.loadQuizzes();
-    });
-    this.loadQuizzes();
+  ) {
+    this.quizzes$ = combineLatest([this.searchCriteria$, this.forceUpdate$])
+      .pipe(tap(() => this.isLoading.set(true)))
+      .pipe(
+        mergeMap(([criteria]) =>
+          this.quizApi.getQuizList(criteria.author, criteria.title)
+        )
+      )
+      .pipe(
+        catchError((e) => {
+          this.isLoading.set(false);
+          throw e;
+        })
+      )
+      .pipe(tap(() => this.isLoading.set(false)));
   }
 
   get isAuthor(): boolean {
     return this.user.current.isTrainer;
-  }
-
-  private loadQuizzes() {
-    this.isLoading = true;
-    this.quizApi
-      .getQuizList(
-        this.quizFilterForm.controls.author.value || '',
-        this.quizFilterForm.controls.title.value || ''
-      )
-      .subscribe({
-        next: (quizzes) => {
-          this.isLoading = false;
-          this.quizzes = quizzes;
-        },
-        error: () => {
-          this.isLoading = false;
-          this.quizzes = [];
-        },
-      });
   }
 
   openQuizCreationDialog() {
@@ -174,7 +114,7 @@ export class QuizSelectionPage implements OnInit {
       if (!!quizId) {
         this.openQuizDetails(quizId, true);
       } else {
-        this.loadQuizzes();
+        this.forceUpdate$.next();
       }
     });
   }
@@ -183,13 +123,6 @@ export class QuizSelectionPage implements OnInit {
     this.router.navigate(['quizzes', quizId], {
       queryParams: { edit: isEditMode },
     });
-  }
-
-  canDelete(quiz: QuizDto): boolean {
-    return (
-      this.user.current.isModerator ||
-      quiz?.authorName === this.user.current.name
-    );
   }
 
   deleteQuiz(quizId: number) {
@@ -206,14 +139,14 @@ export class QuizSelectionPage implements OnInit {
           if (!isConfirmed) {
             return;
           }
-          this.isLoading = true;
+          this.isLoading.set(true);
           this.quizApi.deleteQuiz(quizId).subscribe({
             complete: () => {
-              this.isLoading = false;
-              this.loadQuizzes();
+              this.isLoading.set(false);
+              this.forceUpdate$.next();
             },
             error: (error) => {
-              this.isLoading = false;
+              this.isLoading.set(false);
               this.dialog.open(ErrorDialog, { data: { error } });
             },
           });

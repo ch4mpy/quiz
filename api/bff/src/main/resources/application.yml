@@ -38,8 +38,6 @@ spring:
             scope: openid, profile, email, offline_access
   cloud:
     gateway:
-      default-filters:
-      - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Request-Method Access-Control-Request-Headers
       routes:
       - id: quiz-bff
         uri: ${quiz-api-internal-uri}
@@ -78,10 +76,6 @@ com:
           - /logout/connect/back-channel/quiz-bff
           - /v1/**
           csrf: cookie-accessible-from-js
-          post-login-redirect-host: ${reverse-proxy-uri}
-          post-login-redirect-path: /ui/
-          post-logout-redirect-host: ${reverse-proxy-uri}
-          post-logout-redirect-path: /ui/
           oauth2-redirections:
             authentication-entry-point: UNAUTHORIZED
             pre-authorization-code: OK

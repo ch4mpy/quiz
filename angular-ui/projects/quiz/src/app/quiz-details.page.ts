@@ -102,7 +102,7 @@ import { CommonModule } from '@angular/common';
           <mat-icon>close</mat-icon>
         </button>
         <button
-          *ngIf="isTrainer && !!quiz?.isPublished"
+          *ngIf="canEditQuiz && !!quiz?.isPublished"
           (click)="createCopy()"
           mat-fab
           color="primary"
@@ -133,6 +133,16 @@ import { CommonModule } from '@angular/common';
           class="item-button"
         >
           <mat-icon>edit_off</mat-icon>
+        </button><button
+          *ngIf="canEditQuiz"
+          (click)="downloadQuiz()"
+          mat-fab
+          color="primary"
+          aria-label="Download quiz as JSON file"
+          matTooltip="Download as JSON file"
+          class="item-button"
+        >
+          <mat-icon>download</mat-icon>
         </button>
       </div>
       <h2 *ngIf="!isAuthenticated" style="width: 100%;">
