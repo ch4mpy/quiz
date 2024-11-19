@@ -26,6 +26,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { QuestionExpansionPannelComponent } from './question-expansion-pannel.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
+import { QuizImportExportService } from './quiz-import-export.service';
 
 @Component({
   standalone: true,
@@ -269,7 +270,8 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog,
-    private user: UserService
+    private user: UserService,
+    private importExportService: QuizImportExportService,
   ) {}
 
   ngOnInit(): void {
@@ -628,18 +630,10 @@ export class QuizDetailsPage implements OnInit, OnDestroy {
     });
   }
 
-  protected downloadQuiz() {
-    const blob = this.toJsonBlob(this.quiz);
-    const linkElement = document.createElement('a');
-    linkElement.href = URL.createObjectURL(blob);
-    linkElement.download = `${this.quiz?.title || 'quiz'}.json`;
-    linkElement.click();
-    window.URL.revokeObjectURL(linkElement.href);
-  }
-
-  private toJsonBlob(data: unknown): Blob {
-    return new Blob([JSON.stringify(data)], {
-      type: 'application/json',
-    });
+  downloadQuiz() {
+    if (!this.quiz) {
+      return;
+    }
+    this.importExportService.export(this.quiz);
   }
 }
