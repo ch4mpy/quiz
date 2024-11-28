@@ -76,6 +76,7 @@ cd ..
 
 docker build -t quiz-nginx-reverse-proxy ./nginx-reverse-proxy
 docker build -t quiz-ui ./angular-ui
+docker build -t quiz-well-known ./.well-known
 
 docker compose -f compose-${host}.yml up -d
 

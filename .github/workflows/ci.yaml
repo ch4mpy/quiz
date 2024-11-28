@@ -115,6 +115,14 @@ jobs:
           file: ./angular-ui/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/quiz-ui
+
+      - name: Docker Build-Tag-Push .well-known
+        uses: docker/build-push-action@v6
+        with:
+          context: ./.well-known
+          file: ./.well-known/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/quiz-well-known
       
       - name: Rollout Restart OVH quiz
         run: |
