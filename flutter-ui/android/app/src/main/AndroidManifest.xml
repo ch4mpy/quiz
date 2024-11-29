@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="Qu!z"
@@ -19,25 +20,40 @@
                  to determine the Window background behind the Flutter UI. -->
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
-                android:resource="@style/NormalTheme"
-            />
+                android:resource="@style/NormalTheme" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="true" />
+
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="oidc.c4-soft.com" />
-                <data android:scheme="https" android:host="oidc.c4-soft.com" />
-                <data android:scheme="http" android:host="mc-ch4mp" />
-                <data android:scheme="http" android:host="bravo-ch4mp" />
-                <data android:scheme="http" android:host="desktop-ch4mp" />
+
+                <data android:scheme="https" />
+                <data android:host="quiz.c4-soft.com" />
                 <data android:path="/bff/login/oauth2/code/quiz-bff" />
-                <data android:path="/ui" />
+                <data android:pathPrefix="/ui" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:scheme="http" />
+                <data android:host="bravo-ch4mp" />
+                <data android:host="desktop-ch4mp" />
+                <data android:host="mc-ch4mp" />
+                <data android:path="/bff/login/oauth2/code/quiz-bff" />
+                <data android:pathPrefix="/ui" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
