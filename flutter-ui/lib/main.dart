@@ -9,7 +9,29 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
-  runApp(MaterialApp.router(routerConfig: router));
+  runApp(MaterialApp.router(
+      routerConfig: GoRouter(
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (_, __) => const QuizApp(),
+        routes: [
+          GoRoute(
+            path: '/bff/login/oauth2/code/quiz-bff',
+            builder: (_, __) => Scaffold(
+              appBar: AppBar(title: const Text('Deep Link authorization-code')),
+            ),
+          ),
+          GoRoute(
+            path: '/ui',
+            builder: (_, __) => Scaffold(
+              appBar: AppBar(title: const Text('Deep Link UI')),
+            ),
+          ),
+        ],
+      ),
+    ],
+  )));
 }
 
 class QuizApp extends StatelessWidget {
@@ -31,34 +53,10 @@ class QuizApp extends StatelessWidget {
   }
 }
 
-final router = GoRouter(
-  routes: [
-    GoRoute(
-      path: '/',
-      builder: (_, __) => const QuizApp(),
-      routes: [
-        GoRoute(
-          path: '/bff/login/oauth2/code/quiz-bff',
-          builder: (_, __) => Scaffold(
-            appBar: AppBar(title: const Text('Deep Link authorization-code')),
-          ),
-        ),
-        GoRoute(
-          path: '/ui',
-          builder: (_, __) => Scaffold(
-            appBar: AppBar(title: const Text('Deep Link UI')),
-          ),
-        ),
-      ],
-    ),
-  ],
-);
-
 class QuizAppState extends ChangeNotifier {
   User user = User.anonymous();
 
   login() async {
-    user = User("ch4mpy", ["trainer", "moderator"]);
     final opts = await getLoginOptions();
     final authorizationUri = opts.length == 1
         ? await getAuthorizationUri(opts.first.loginUri)
@@ -76,7 +74,7 @@ class QuizAppState extends ChangeNotifier {
 
   Future<List<LoginOption>> getLoginOptions() async {
     final response =
-        await http.get(Uri.parse('http://desktop-ch4mp/bff/login-options'));
+        await http.get(Uri.parse('https://quiz.c4-soft.com/bff/login-options'));
     if (response.statusCode != 200) {
       return [];
     }
@@ -91,7 +89,8 @@ class QuizAppState extends ChangeNotifier {
   }
 
   Future<Uri?> getAuthorizationUri(String loginUri) async {
-    final response = await http.get(Uri.parse(loginUri));
+    final response = await http
+        .get(Uri.parse(loginUri), headers: {'X-Response-Status': '200'});
     final location = response.headers['location'];
     return location != null ? Uri.parse(location) : null;
   }
