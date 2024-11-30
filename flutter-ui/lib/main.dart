@@ -1,12 +1,17 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http_interceptor/http_interceptor.dart';
 import 'package:provider/provider.dart';
+import 'package:quiz/http.dart';
 import 'package:quiz/main_page.dart';
 import 'package:quiz/user.dart';
-import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+
+final Client _client =
+    InterceptedClient.build(interceptors: [CookieInterceptor()]);
 
 void main() {
   runApp(MaterialApp.router(
@@ -18,20 +23,37 @@ void main() {
         routes: [
           GoRoute(
             path: '/bff/login/oauth2/code/quiz-bff',
-            builder: (_, __) => Scaffold(
-              appBar: AppBar(title: const Text('Deep Link authorization-code')),
-            ),
-          ),
-          GoRoute(
-            path: '/ui',
-            builder: (_, __) => Scaffold(
-              appBar: AppBar(title: const Text('Deep Link UI')),
-            ),
+            builder: (context, state) => AuthorizationCodeHandler(state: state),
           ),
         ],
       ),
     ],
   )));
+}
+
+class AuthorizationCodeHandler extends StatelessWidget {
+  final GoRouterState state;
+
+  AuthorizationCodeHandler({super.key, required this.state}) {
+    _client.get(state.uri, headers: {'X-Response-Status': '200'}).then((value) {
+      value.headers.forEach((key, value) {
+        print('$key: $value');
+      });
+      _client
+          .get(Uri.parse('https://quiz.c4-soft.com/bff/v1/users/me'))
+          .then((userResponse) {
+        final user = jsonDecode(userResponse.body);
+        if (user != null) {
+          log(user.toString());
+        }
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('Loging in...');
+  }
 }
 
 class QuizApp extends StatelessWidget {
@@ -47,7 +69,7 @@ class QuizApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: const Color(0x003f51b5)),
         ),
-        home: const MainPage(),
+        home: MainPage(path: '/'),
       ),
     );
   }
@@ -73,8 +95,8 @@ class QuizAppState extends ChangeNotifier {
   }
 
   Future<List<LoginOption>> getLoginOptions() async {
-    final response =
-        await http.get(Uri.parse('https://quiz.c4-soft.com/bff/login-options'));
+    final response = await _client
+        .get(Uri.parse('https://quiz.c4-soft.com/bff/login-options'));
     if (response.statusCode != 200) {
       return [];
     }
@@ -89,7 +111,7 @@ class QuizAppState extends ChangeNotifier {
   }
 
   Future<Uri?> getAuthorizationUri(String loginUri) async {
-    final response = await http
+    final response = await _client
         .get(Uri.parse(loginUri), headers: {'X-Response-Status': '200'});
     final location = response.headers['location'];
     return location != null ? Uri.parse(location) : null;

@@ -4,7 +4,8 @@ import 'package:quiz/main.dart';
 import 'package:quiz/user_chip.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  String path;
+  MainPage({super.key, required this.path});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -12,6 +13,8 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   var isTabbarVisible = false;
+
+  _MainPageState();
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +65,7 @@ class _MainPageState extends State<MainPage> {
         ),
         body: Center(
           child: Column(children: [
+            Text(widget.path),
             if (user.isAuthenticated()) ...[
               if (user.isTrainer()) const Text("You are a trainer"),
               if (user.isModerator()) const Text("You are a moderator"),
