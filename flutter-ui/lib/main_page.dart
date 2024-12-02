@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quiz/main.dart';
+import 'package:quiz/user.dart';
 import 'package:quiz/user_chip.dart';
 
-class MainPage extends StatefulWidget {
-  String path;
-  MainPage({super.key, required this.path});
+class MainPage extends ConsumerStatefulWidget {
+  MainPage({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  ConsumerState<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends ConsumerState<MainPage> {
   var isTabbarVisible = false;
 
   _MainPageState();
 
   @override
   Widget build(BuildContext context) {
-    final appState = context.watch<QuizAppState>();
-    final user = appState.user;
+    final userService = ref.watch(userServiceProvider);
+    final user = userService.current;
 
     final tabs = [
       const Tab(
@@ -51,9 +51,9 @@ class _MainPageState extends State<MainPage> {
                 onPressed: toggleTabbar,
               ),
             user.isAuthenticated()
-                ? UserChip(user: user, appState: appState)
+                ? UserChip()
                 : IconButton(
-                    onPressed: appState.login,
+                    onPressed: userService.initiateAuthorizationCodeFlow,
                     icon: const Icon(
                       Icons.login,
                       semanticLabel: "login",
@@ -65,7 +65,6 @@ class _MainPageState extends State<MainPage> {
         ),
         body: Center(
           child: Column(children: [
-            Text(widget.path),
             if (user.isAuthenticated()) ...[
               if (user.isTrainer()) const Text("You are a trainer"),
               if (user.isModerator()) const Text("You are a moderator"),
