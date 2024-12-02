@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz/routes.dart';
 import 'package:quiz/user.dart';
+import 'dart:math' as math;
 
 void main() {
   runApp(const ProviderScope(child: QuizApp()));
@@ -15,11 +16,13 @@ class AuthorizationCodeHandler extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userService = ref.watch(userServiceProvider);
-    userService.forwardAuthorizationCode(state.uri).then((value) {
+    ref
+        .watch(userServiceProvider.notifier)
+        .forwardAuthorizationCode(state.uri)
+        .then((value) {
       ref.read(goRouterProvider).go('/');
     });
-    return Text('Loging in...');
+    return Image(image: AssetImage('images/android-chrome-192x192.png'));
   }
 }
 

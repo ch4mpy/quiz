@@ -6,9 +6,11 @@ import 'package:http_interceptor/http_interceptor.dart';
 import 'package:quiz/http.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'user.g.dart';
 
+@freezed
 class User {
   final String name;
   final List<String> roles;
@@ -41,10 +43,15 @@ class User {
   }
 }
 
-class UserService extends ChangeNotifier {
-  User current = User.anonymous();
-  final Client _client =
-      InterceptedClient.build(interceptors: [CookieInterceptor()]);
+@riverpod
+class UserService extends _$UserService {
+  late Client _client;
+
+  @override
+  User build() {
+    _client = ref.read(clientProvider);
+    return User.anonymous();
+  }
 
   /// Initiates the authorization code flow by fetching the login options and
   /// then opening the authorization URI in the browser.
@@ -77,22 +84,24 @@ class UserService extends ChangeNotifier {
         .get(Uri.parse('https://quiz.c4-soft.com/bff/v1/users/me'));
     final user = jsonDecode(userResponse.body);
     if (user != null) {
-      if (user['username'] != current.name || user['roles'] != current.roles) {
-        current = User(user['username'], List<String>.from(user['roles']));
-        notifyListeners();
+      if (user['username'] != state.name || user['roles'] != state.roles) {
+        state = User(user['username'], List<String>.from(user['roles']));
       }
-    } else if (current.name != "" || current.roles.isNotEmpty) {
-      current = User.anonymous();
-      notifyListeners();
+    } else if (state.name != "" || state.roles.isNotEmpty) {
+      state = User.anonymous();
     }
-    return current;
+    return state;
   }
 
   Future<User> logout() async {
-    await _client.post(Uri.parse('https://quiz.c4-soft.com/bff/logout'));
-    current = User.anonymous();
-    notifyListeners();
-    return current;
+    final rpLogout =
+        await _client.post(Uri.parse('https://quiz.c4-soft.com/bff/logout'));
+    final opLogoutLocation = rpLogout.headers['location'];
+    if (opLogoutLocation != null && opLogoutLocation.isNotEmpty) {
+      await _client.get(Uri.parse(opLogoutLocation));
+    }
+    state = User.anonymous();
+    return state;
   }
 
   Future<List<LoginOption>> getLoginOptions() async {
@@ -117,11 +126,6 @@ class UserService extends ChangeNotifier {
     final location = response.headers['location'];
     return location != null ? Uri.parse(location) : null;
   }
-}
-
-@riverpod
-UserService userService(Ref ref) {
-  return UserService();
 }
 
 class LoginOption {

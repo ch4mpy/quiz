@@ -46,9 +46,7 @@ class CookieInterceptor extends InterceptorContract {
     response.headersSplitValues['set-cookie']
         ?.map(Cookie.fromSetCookieValue)
         .forEach((cookie) {
-      if ((cookie.sameSite == SameSite.lax ||
-              cookie.sameSite == SameSite.strict) &&
-          cookie.domain == null) {
+      if ((cookie.domain ?? '').isEmpty) {
         cookie.domain = response.request!.url.host;
       }
       _setOrReplace(cookie);
@@ -87,45 +85,41 @@ class CookieInterceptor extends InterceptorContract {
 }
 
 class LoadingInterceptor extends InterceptorContract {
-  final LoadingService _service;
+  final IsLoading loadingService;
 
-  LoadingInterceptor(this._service);
+  LoadingInterceptor(this.loadingService);
 
   @override
   FutureOr<http.BaseRequest> interceptRequest(
       {required http.BaseRequest request}) {
-    _service.setLoading(true);
+    loadingService.setLoading(true);
     return request;
   }
 
   @override
   FutureOr<http.BaseResponse> interceptResponse(
       {required http.BaseResponse response}) {
-    _service.setLoading(false);
+    loadingService.setLoading(false);
     return response;
   }
 }
 
-class LoadingService extends ChangeNotifier {
-  bool _loading = false;
-
-  bool get isLoading => _loading;
+@riverpod
+class IsLoading extends _$IsLoading {
+  @override
+  bool build() {
+    return false;
+  }
 
   void setLoading(bool loading) {
-    _loading = loading;
-    notifyListeners();
+    state = loading;
   }
-}
-
-@riverpod
-LoadingService loadingService(Ref ref) {
-  return LoadingService();
 }
 
 @riverpod
 Client client(Ref ref) {
   return InterceptedClient.build(interceptors: [
     CookieInterceptor(),
-    LoadingInterceptor(ref.watch(loadingServiceProvider))
+    LoadingInterceptor(ref.watch(isLoadingProvider.notifier))
   ]);
 }

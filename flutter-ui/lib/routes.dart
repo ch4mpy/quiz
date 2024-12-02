@@ -25,8 +25,5 @@ GoRouter goRouter(Ref ref) {
         redirect: (context, state) => '/',
       ),
     ],
-    redirect: (context, state) {
-      return '/';
-    },
   );
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:quiz/main.dart';
 import 'package:quiz/user.dart';
 import 'package:quiz/user_chip.dart';
 
@@ -18,8 +17,7 @@ class _MainPageState extends ConsumerState<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userService = ref.watch(userServiceProvider);
-    final user = userService.current;
+    final user = ref.watch(userServiceProvider);
 
     final tabs = [
       const Tab(
@@ -53,7 +51,9 @@ class _MainPageState extends ConsumerState<MainPage> {
             user.isAuthenticated()
                 ? UserChip()
                 : IconButton(
-                    onPressed: userService.initiateAuthorizationCodeFlow,
+                    onPressed: ref
+                        .watch(userServiceProvider.notifier)
+                        .initiateAuthorizationCodeFlow,
                     icon: const Icon(
                       Icons.login,
                       semanticLabel: "login",

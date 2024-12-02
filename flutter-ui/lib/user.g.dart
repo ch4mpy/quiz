@@ -6,12 +6,13 @@ part of 'user.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$userServiceHash() => r'd202c375439ba7e228837169af5a32c16c9ddb4a';
+String _$userServiceHash() => r'3054615dd902f72a7e3f16c8ca7e265baa0b190f';
 
-/// See also [userService].
-@ProviderFor(userService)
-final userServiceProvider = AutoDisposeProvider<UserService>.internal(
-  userService,
+/// See also [UserService].
+@ProviderFor(UserService)
+final userServiceProvider =
+    AutoDisposeNotifierProvider<UserService, User>.internal(
+  UserService.new,
   name: r'userServiceProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$userServiceHash,
@@ -19,8 +20,6 @@ final userServiceProvider = AutoDisposeProvider<UserService>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef UserServiceRef = AutoDisposeProviderRef<UserService>;
+typedef _$UserService = AutoDisposeNotifier<User>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -7,7 +7,6 @@ class UserChip extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userService = ref.watch(userServiceProvider);
     return Row(
       children: [
         const Icon(
@@ -15,7 +14,7 @@ class UserChip extends ConsumerWidget {
           semanticLabel: "user account",
         ),
         IconButton(
-            onPressed: userService.logout,
+            onPressed: ref.watch(userServiceProvider.notifier).logout,
             icon: const Icon(
               Icons.logout,
               semanticLabel: "logout",
