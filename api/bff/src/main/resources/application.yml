@@ -65,6 +65,10 @@ com:
           - path: $.realm_access.roles
         client:
           client-uri: ${gateway-public-uri}
+          post-login-redirect-host: ${reverse-proxy-uri}
+          post-login-redirect-path: /ui/
+          post-logout-redirect-host: ${reverse-proxy-uri}
+          post-logout-redirect-path: /ui/
           security-matchers:
           - /login/**
           - /oauth2/**

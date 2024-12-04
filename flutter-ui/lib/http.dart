@@ -1,58 +1,70 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_interceptor/http_interceptor.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'http.g.dart';
 
-class CookieInterceptor extends InterceptorContract {
+@riverpod
+Dio backend(Ref ref) {
+  final dio = Dio(BaseOptions(baseUrl: 'https://quiz.c4-soft.com'));
+  dio.interceptors.addAll([
+    CookieInterceptor(),
+    LoadingInterceptor(ref.read(isLoadingProvider.notifier))
+  ]);
+  return dio;
+}
+
+class CookieInterceptor extends InterceptorsWrapper {
   final List<Cookie> _cookies = [];
 
   @override
-  FutureOr<http.BaseRequest> interceptRequest(
-      {required http.BaseRequest request}) {
-    final String cookieHeader = _cookieHeader(request.url);
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) {
+    final String cookieHeader = _cookieHeader(options.uri);
     if (cookieHeader.isNotEmpty) {
-      request.headers.update('cookie', (value) => "$value; $cookieHeader",
+      options.headers.update('cookie', (value) => "$value; $cookieHeader",
           ifAbsent: () => cookieHeader);
     }
 
-    if (request.method == 'POST' ||
-        request.method == 'PUT' ||
-        request.method == 'PATCH' ||
-        request.method == 'DELETE') {
+    if (options.method == 'POST' ||
+        options.method == 'PUT' ||
+        options.method == 'PATCH' ||
+        options.method == 'DELETE') {
       final csrfCookie = _cookies.firstWhere((cookie) {
         final domain = cookie.domain ?? '';
         return domain.isNotEmpty &&
-            request.url.host.contains(domain) &&
+            options.uri.host.contains(domain) &&
             cookie.name == 'XSRF-TOKEN';
       }, orElse: () => Cookie('XSRF-TOKEN', ''));
       if (csrfCookie.value.isNotEmpty) {
-        request.headers['X-XSRF-TOKEN'] = csrfCookie.value;
+        options.headers['X-XSRF-TOKEN'] = csrfCookie.value;
       }
     }
 
-    return request;
+    handler.next(options);
   }
 
   @override
-  FutureOr<http.BaseResponse> interceptResponse(
-      {required http.BaseResponse response}) {
+  void onResponse(
+    Response response,
+    ResponseInterceptorHandler handler,
+  ) {
     _cleanExpiredCookies();
 
-    response.headersSplitValues['set-cookie']
+    response.headers['set-cookie']
         ?.map(Cookie.fromSetCookieValue)
         .forEach((cookie) {
       if ((cookie.domain ?? '').isEmpty) {
-        cookie.domain = response.request!.url.host;
+        cookie.domain = response.requestOptions.uri.host;
       }
       _setOrReplace(cookie);
     });
 
-    return response;
+    handler.next(response);
   }
 
   void _setOrReplace(Cookie cookie) {
@@ -84,28 +96,43 @@ class CookieInterceptor extends InterceptorContract {
   }
 }
 
-class LoadingInterceptor extends InterceptorContract {
+class LoadingInterceptor extends InterceptorsWrapper {
   final IsLoading loadingService;
 
   LoadingInterceptor(this.loadingService);
 
   @override
-  FutureOr<http.BaseRequest> interceptRequest(
-      {required http.BaseRequest request}) {
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) {
     loadingService.setLoading(true);
-    return request;
+    handler.next(options);
   }
 
   @override
-  FutureOr<http.BaseResponse> interceptResponse(
-      {required http.BaseResponse response}) {
+  void onResponse(
+    Response response,
+    ResponseInterceptorHandler handler,
+  ) {
     loadingService.setLoading(false);
-    return response;
+    handler.next(response);
+  }
+
+  @override
+  void onError(
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) {
+    loadingService.setLoading(false);
+    handler.next(err);
   }
 }
 
 @riverpod
 class IsLoading extends _$IsLoading {
+  // FIXME: this class should handle several concurrent requests
+
   @override
   bool build() {
     return false;
@@ -114,12 +141,4 @@ class IsLoading extends _$IsLoading {
   void setLoading(bool loading) {
     state = loading;
   }
-}
-
-@riverpod
-Client client(Ref ref) {
-  return InterceptedClient.build(interceptors: [
-    CookieInterceptor(),
-    LoadingInterceptor(ref.watch(isLoadingProvider.notifier))
-  ]);
 }

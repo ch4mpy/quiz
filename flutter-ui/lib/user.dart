@@ -1,12 +1,10 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http_interceptor/http_interceptor.dart';
+import 'package:dio/dio.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:quiz/http.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'user.g.dart';
 
@@ -45,11 +43,11 @@ class User {
 
 @riverpod
 class UserService extends _$UserService {
-  late Client _client;
+  late Dio _backend;
 
   @override
   User build() {
-    _client = ref.read(clientProvider);
+    _backend = ref.read(backendProvider);
     return User.anonymous();
   }
 
@@ -74,18 +72,18 @@ class UserService extends _$UserService {
   /// Forwards the authorization code to the backend and refreshes the user.
   /// Intended to be called by a deep-link handler, when handling the redirection from the authorization server.
   Future<User> forwardAuthorizationCode(Uri authorizationCodeUri) async {
-    await _client
-        .get(authorizationCodeUri, headers: {'X-Response-Status': '200'});
+    await _backend.get(authorizationCodeUri.toString(),
+        options: Options(headers: {'X-Response-Status': 200}));
     return refresh();
   }
 
   Future<User> refresh() async {
-    final userResponse = await _client
-        .get(Uri.parse('https://quiz.c4-soft.com/bff/v1/users/me'));
-    final user = jsonDecode(userResponse.body);
-    if (user != null) {
-      if (user['username'] != state.name || user['roles'] != state.roles) {
-        state = User(user['username'], List<String>.from(user['roles']));
+    final userResponse = await _backend.get('/bff/v1/users/me');
+    if (userResponse.data != null) {
+      if (userResponse.data['username'] != state.name ||
+          userResponse.data['roles'] != state.roles) {
+        state = User(userResponse.data['username'],
+            List<String>.from(userResponse.data['roles']));
       }
     } else if (state.name != "" || state.roles.isNotEmpty) {
       state = User.anonymous();
@@ -94,37 +92,40 @@ class UserService extends _$UserService {
   }
 
   Future<User> logout() async {
-    final rpLogout =
-        await _client.post(Uri.parse('https://quiz.c4-soft.com/bff/logout'));
-    final opLogoutLocation = rpLogout.headers['location'];
-    if (opLogoutLocation != null && opLogoutLocation.isNotEmpty) {
-      await _client.get(Uri.parse(opLogoutLocation));
+    final rpLogout = await _backend.post('/bff/logout',
+        options: Options(headers: {
+          'X-POST-LOGOUT-SUCCESS-URI': '${_backend.options.baseUrl}/ui/'
+        }));
+    final locations = rpLogout.headers['location'];
+    if (locations != null && locations.isNotEmpty && locations[0].isNotEmpty) {
+      final opLogoutUrl = locations[0];
+      state = User.anonymous();
+      // A strict implementation would be
+      // launchUrl(Uri.parse(opLogoutUrl));
+      // But that causes the device to flicker, so we use an ajax request instead
+      _backend.get(opLogoutUrl);
     }
-    state = User.anonymous();
     return state;
   }
 
   Future<List<LoginOption>> getLoginOptions() async {
-    final response = await _client
-        .get(Uri.parse('https://quiz.c4-soft.com/bff/login-options'));
+    final response = await _backend.get('/bff/login-options');
     if (response.statusCode != 200) {
       return [];
     }
-
-    final opts = jsonDecode(response.body) as List<dynamic>;
-    return opts
-        .map((opt) {
-          return opt as Map<String, dynamic>;
-        })
-        .map(LoginOption.fromJson)
-        .toList();
+    return response.data
+        .map((opt) => LoginOption.fromJson(opt))
+        .toList()
+        .cast<LoginOption>();
   }
 
   Future<Uri?> getAuthorizationUri(String loginUri) async {
-    final response = await _client
-        .get(Uri.parse(loginUri), headers: {'X-Response-Status': '200'});
-    final location = response.headers['location'];
-    return location != null ? Uri.parse(location) : null;
+    final response = await _backend.get(loginUri,
+        options: Options(headers: {'X-Response-Status': '200'}));
+    final locations = response.headers['location'];
+    return locations != null && locations.isNotEmpty && locations[0].isNotEmpty
+        ? Uri.parse(locations[0])
+        : null;
   }
 }
 
