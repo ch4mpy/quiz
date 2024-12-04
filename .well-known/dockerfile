@@ -1,3 +1,4 @@
 FROM nginx
-COPY ./assetlinks.json /usr/share/nginx/html/.well-known/assetlinks.json
+COPY ./assetlinks.json            /usr/share/nginx/html/.well-known/assetlinks.json
+copy ./apple-app-site-association /usr/share/nginx/html/.well-known/apple-app-site-association
 COPY nginx.conf /etc/nginx/nginx.conf

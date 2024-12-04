@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.c4_soft.quiz",
+      "package_name": "com.github.ch4mpy.quiz",
       "sha256_cert_fingerprints": [
         "53:CB:09:AE:A6:10:FE:05:F0:13:A7:91:ED:00:0D:BE:A1:01:FC:DD:17:E3:A6:75:97:92:14:86:EE:D2:DB:E6"
       ]
@@ -13,7 +13,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.c4_soft.quiz",
+      "package_name": "com.github.ch4mpy.quiz",
       "sha256_cert_fingerprints": [
         "E1:E6:6E:88:27:1A:D4:B7:4A:CC:13:FD:19:1D:D7:7E:4F:42:05:0D:E6:B3:55:D8:1E:A2:B6:29:59:50:09:B4"
       ]
