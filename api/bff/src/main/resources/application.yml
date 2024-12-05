@@ -64,6 +64,7 @@ com:
           authorities:
           - path: $.realm_access.roles
         client:
+          pkce-forced: true
           client-uri: ${gateway-public-uri}
           post-login-redirect-host: ${reverse-proxy-uri}
           post-login-redirect-path: /ui/
