@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:uuid/uuid.dart';
 
 part 'http.g.dart';
 
@@ -11,7 +12,7 @@ Dio backend(Ref ref) {
   final dio = Dio(BaseOptions(baseUrl: 'https://quiz.c4-soft.com'));
   dio.interceptors.addAll([
     CookieInterceptor(),
-    LoadingInterceptor(ref.read(isLoadingProvider.notifier))
+    LoadingInterceptor(ref.read(loadingProvider.notifier))
   ]);
   return dio;
 }
@@ -97,16 +98,18 @@ class CookieInterceptor extends InterceptorsWrapper {
 }
 
 class LoadingInterceptor extends InterceptorsWrapper {
-  final IsLoading loadingService;
+  static const _requestIdHeaderName = 'X-REQUEST-ID';
+  final Loading loading;
 
-  LoadingInterceptor(this.loadingService);
+  LoadingInterceptor(this.loading);
 
   @override
   void onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) {
-    loadingService.setLoading(true);
+    options.headers[_requestIdHeaderName] =
+        loading.start(options.uri.toString());
     handler.next(options);
   }
 
@@ -115,7 +118,7 @@ class LoadingInterceptor extends InterceptorsWrapper {
     Response response,
     ResponseInterceptorHandler handler,
   ) {
-    loadingService.setLoading(false);
+    loading.stop(response.requestOptions.headers[_requestIdHeaderName]);
     handler.next(response);
   }
 
@@ -124,21 +127,32 @@ class LoadingInterceptor extends InterceptorsWrapper {
     DioException err,
     ErrorInterceptorHandler handler,
   ) {
-    loadingService.setLoading(false);
+    loading.stop(err.requestOptions.headers[_requestIdHeaderName]);
     handler.next(err);
   }
 }
 
+/// To know if something is loading: ref.watch(loadingProvider).isNotEmpty
 @riverpod
-class IsLoading extends _$IsLoading {
-  // FIXME: this class should handle several concurrent requests
+class Loading extends _$Loading {
+  final _uuid = Uuid();
 
   @override
-  bool build() {
-    return false;
+  Map<String, String> build() {
+    return {};
   }
 
-  void setLoading(bool loading) {
-    state = loading;
+  /// info: some info about what starts loading
+  /// returns: an ID to provide when calling stop
+  String start(String info) {
+    final id = _uuid.v1();
+    state[id] = info;
+    return id;
+  }
+
+  /// id: the ID returned by start
+  /// returns: the info about what was loading, or nothing if the ID was invalid
+  String? stop(String id) {
+    return state.remove(id);
   }
 }

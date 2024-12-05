@@ -4,7 +4,7 @@ import 'package:quiz/user.dart';
 import 'package:quiz/user_chip.dart';
 
 class MainPage extends ConsumerStatefulWidget {
-  MainPage({super.key});
+  const MainPage({super.key});
 
   @override
   ConsumerState<MainPage> createState() => _MainPageState();
