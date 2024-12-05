@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:quiz/http.dart';
+import 'package:quiz/loading.dart';
 
 class QuizLogo extends ConsumerStatefulWidget {
   const QuizLogo({super.key});
