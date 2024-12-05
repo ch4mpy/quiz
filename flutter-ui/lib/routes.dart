@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:quiz/authorization_code_handler.dart';
 import 'package:quiz/main_page.dart';
+import 'package:quiz/user.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'routes.g.dart';
@@ -9,6 +9,7 @@ part 'routes.g.dart';
 @riverpod
 GoRouter goRouter(Ref ref) {
   return GoRouter(
+    initialLocation: '/',
     routes: [
       GoRoute(
         path: '/',
@@ -16,7 +17,12 @@ GoRouter goRouter(Ref ref) {
       ),
       GoRoute(
         path: '/bff/login/oauth2/code/quiz-bff',
-        builder: (context, state) => AuthorizationCodeHandler(state: state),
+        redirect: (context, state) {
+          ref
+              .read(userServiceProvider.notifier)
+              .forwardAuthorizationCode(state.uri);
+          return '/';
+        },
       ),
       GoRoute(
         path: '/ui',

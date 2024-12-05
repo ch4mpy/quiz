@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quiz/quiz_logo.dart';
 import 'package:quiz/user.dart';
 import 'package:quiz/user_chip.dart';
 
@@ -36,7 +37,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Qu!z"),
+          title: QuizLogo(),
           backgroundColor: theme.colorScheme.primary,
           foregroundColor: theme.colorScheme.onPrimary,
           actions: [

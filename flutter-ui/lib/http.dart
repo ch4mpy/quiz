@@ -133,6 +133,7 @@ class LoadingInterceptor extends InterceptorsWrapper {
 }
 
 /// To know if something is loading: ref.watch(loadingProvider).isNotEmpty
+@Riverpod(keepAlive: true)
 @riverpod
 class Loading extends _$Loading {
   final _uuid = Uuid();
