@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import 'package:quiz/main.dart';
+import 'package:quiz/authorization_code_handler.dart';
 import 'package:quiz/main_page.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
