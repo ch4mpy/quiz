@@ -7,6 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'http.g.dart';
 
+@Riverpod(keepAlive: true)
 @riverpod
 Dio backend(Ref ref) {
   final dio = Dio(BaseOptions(baseUrl: 'https://quiz.c4-soft.com'));
@@ -98,7 +99,7 @@ class CookieInterceptor extends InterceptorsWrapper {
 }
 
 class LoadingInterceptor extends InterceptorsWrapper {
-  static const _requestIdHeaderName = 'X-REQUEST-ID';
+  static const _requestIdHeaderName = 'X-LOADING-TASK-ID';
   final Loading loading;
 
   LoadingInterceptor(this.loading);

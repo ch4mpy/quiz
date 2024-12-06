@@ -41,6 +41,7 @@ class User {
   }
 }
 
+@Riverpod(keepAlive: true)
 @riverpod
 class UserService extends _$UserService {
   late Dio _backend;
